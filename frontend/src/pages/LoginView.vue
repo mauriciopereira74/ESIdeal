@@ -18,9 +18,13 @@
           <button type="submit">Login</button>
         </form>
       </div>
+      <div class="error-popup" v-if="loginError">
+        <p>Username or password is incorrect</p>
+      </div>
     </div>
   </div>
 </template>
+
 
 <script>
 export default {
@@ -30,7 +34,8 @@ export default {
       loginForm: {
         employeeNumber: '',
         password: ''
-      }
+      },
+      loginError: false 
     }
   },
   methods: {
@@ -48,17 +53,24 @@ export default {
 
         if (mechanic) {
           console.log('Login successful', mechanic);
-          localStorage.setItem('isLoggedIn', 'true');  // Salvar estado de login
+          localStorage.setItem('isLoggedIn', 'true');  
           this.$router.push({ path: '/welcome' });
         } else {
           console.log('Login failed');
-          localStorage.removeItem('isLoggedIn');  // Assegurar limpeza no falha
-          this.loginError = true;
+          localStorage.removeItem('isLoggedIn');  
+          this.loginError = true; 
+          setTimeout(() => {
+            this.loginError = false;
+          }, 3000);
         }
       } catch (error) {
         console.error('Erro de autenticação', error);
-        localStorage.removeItem('isLoggedIn');  // Assegurar limpeza no erro
-        this.loginError = true;
+        localStorage.removeItem('isLoggedIn');  
+        this.loginError = true; 
+        
+        setTimeout(() => {
+          this.loginError = false;
+        }, 3000);
       }
     }
   }
@@ -156,4 +168,25 @@ button {
 button:hover {
   background-color: #2980b9;
 }
+
+.error-popup {
+  position: fixed;
+  top: 20px; 
+  right: 20px; 
+  background-color: rgba(255, 0, 0, 0.7); 
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: opacity 0.5s ease-in-out; 
+  opacity: 1; 
+}
+
+.error-popup p {
+  margin: 0;
+}
+
+.error-popup.hidden {
+  opacity: 0;
+}
+
 </style>
