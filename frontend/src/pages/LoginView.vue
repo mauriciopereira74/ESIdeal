@@ -63,10 +63,17 @@ export default {
         } else {
           localStorage.removeItem('isLoggedIn');
           this.loginError = true;
+          setTimeout(() => {
+            this.loginError = false;
+          }, 3000);
         }
       } catch (error) {
         localStorage.removeItem('isLoggedIn');
         this.loginError = true;
+
+        setTimeout(() => {
+          this.loginError = false;
+        }, 3000);
       }
     }
   }
