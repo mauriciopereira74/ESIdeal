@@ -23,6 +23,9 @@
 </template>
 
 <script>
+
+import { setUser } from '../models/user';
+
 export default {
   name: 'LoginView',
   data() {
@@ -30,7 +33,8 @@ export default {
       loginForm: {
         employeeNumber: '',
         password: ''
-      }
+      },
+      loginError: false
     }
   },
   methods: {
@@ -47,17 +51,21 @@ export default {
         );
 
         if (mechanic) {
-          console.log('Login successful', mechanic);
-          localStorage.setItem('isLoggedIn', 'true');  // Salvar estado de login
+          const mechanicDetails = {
+            id: mechanic.id,
+            nome: mechanic.nome,
+            especialidade: mechanic.especialidade,
+            employeeNumber: mechanic.employeeNumber
+          };
+          setUser(mechanicDetails);
+          localStorage.setItem('isLoggedIn', 'true');
           this.$router.push({ path: '/welcome' });
         } else {
-          console.log('Login failed');
-          localStorage.removeItem('isLoggedIn');  // Assegurar limpeza no falha
+          localStorage.removeItem('isLoggedIn');
           this.loginError = true;
         }
       } catch (error) {
-        console.error('Erro de autenticação', error);
-        localStorage.removeItem('isLoggedIn');  // Assegurar limpeza no erro
+        localStorage.removeItem('isLoggedIn');
         this.loginError = true;
       }
     }
