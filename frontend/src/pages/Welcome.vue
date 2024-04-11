@@ -41,7 +41,7 @@ export default {
       if (user.isLoggedIn && user.mechanic) {
         this.employee = {
           photo: 'path-to-employee-photo.jpg',
-          nome: user.mechanic.name,
+          nome: user.mechanic.nome,
           especialidade: user.mechanic.especialidade,
           employeeNumber: user.mechanic.employeeNumber
         };
@@ -60,19 +60,15 @@ export default {
 .employee-info {
   /* Styles for the employee info section */
 }
-
 .employee-photo {
   /* Styles for the employee photo */
 }
-
 .search-field input {
   /* Styles for the search input */
 }
-
 .tasks-table {
   /* Styles for the tasks table */
 }
-
 .status {
   /* Base styles for status */
   padding: 0.5rem;
@@ -80,11 +76,9 @@ export default {
   color: white;
   font-weight: bold;
 }
-
 .waiting {
   background-color: #f0ad4e; /* Bootstrap 'warning' color */
 }
-
 .done {
   background-color: #5cb85c; /* Bootstrap 'success' color */
 }

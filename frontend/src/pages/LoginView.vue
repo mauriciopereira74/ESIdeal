@@ -26,7 +26,11 @@
 </template>
 
 <script>
+
+import { setUser } from '../models/user';
+
 export default {
+  
   name: 'LoginView',
   data() {
     return {
@@ -51,11 +55,16 @@ export default {
         );
 
         if (mechanic) {
-          console.log('Login successful', mechanic);
-          localStorage.setItem('isLoggedIn', 'true'); 
+          const mechanicDetails = {
+            id: mechanic.id,
+            nome: mechanic.nome,
+            especialidade: mechanic.especialidade,
+            employeeNumber: mechanic.employeeNumber
+          };
+          setUser(mechanicDetails);
+          localStorage.setItem('isLoggedIn', 'true');
           this.$router.push({ path: '/welcome' });
         } else {
-          console.log('Login failed');
           localStorage.removeItem('isLoggedIn');  
           this.loginError = true; 
           
