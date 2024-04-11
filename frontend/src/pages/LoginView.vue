@@ -18,14 +18,14 @@
           <button type="submit">Login</button>
         </form>
       </div>
+      <div class="error-popup" v-if="loginError">
+        <p>Username or password is incorrect</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-
-import { setUser } from '../models/user';
-
 export default {
   name: 'LoginView',
   data() {
@@ -34,7 +34,7 @@ export default {
         employeeNumber: '',
         password: ''
       },
-      loginError: false
+      loginError: false 
     }
   },
   methods: {
@@ -51,26 +51,23 @@ export default {
         );
 
         if (mechanic) {
-          const mechanicDetails = {
-            id: mechanic.id,
-            nome: mechanic.nome,
-            especialidade: mechanic.especialidade,
-            employeeNumber: mechanic.employeeNumber
-          };
-          setUser(mechanicDetails);
-          localStorage.setItem('isLoggedIn', 'true');
+          console.log('Login successful', mechanic);
+          localStorage.setItem('isLoggedIn', 'true'); 
           this.$router.push({ path: '/welcome' });
         } else {
-          localStorage.removeItem('isLoggedIn');
-          this.loginError = true;
+          console.log('Login failed');
+          localStorage.removeItem('isLoggedIn');  
+          this.loginError = true; 
+          
           setTimeout(() => {
             this.loginError = false;
           }, 3000);
         }
       } catch (error) {
-        localStorage.removeItem('isLoggedIn');
-        this.loginError = true;
-
+        console.error('Erro de autenticação', error);
+        localStorage.removeItem('isLoggedIn');  
+        this.loginError = true; 
+        
         setTimeout(() => {
           this.loginError = false;
         }, 3000);
@@ -79,6 +76,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .split-view {
@@ -170,5 +168,27 @@ button {
 
 button:hover {
   background-color: #2980b9;
+}
+
+
+.error-popup {
+  position: fixed;
+  top: 20px; 
+  right: 20px; 
+  background-color: rgba(255, 0, 0, 0.7); 
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: opacity 0.5s ease-in-out; 
+  opacity: 1; 
+}
+
+.error-popup p {
+  margin: 0;
+}
+
+
+.error-popup.hidden {
+  opacity: 0;
 }
 </style>
