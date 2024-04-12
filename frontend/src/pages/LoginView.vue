@@ -120,7 +120,7 @@ export default {
 }
 
 .logo {
-  width: 500px;
+  width: 700px;
   margin-bottom: 20px;
   border-radius: 100px;
   margin-top: auto;

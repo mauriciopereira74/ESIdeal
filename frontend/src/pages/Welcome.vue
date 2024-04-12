@@ -1,10 +1,52 @@
 <template>
   <div class="welcome-page">
     <div class="employee-info">
-      <img :src="employee.photo" alt="Employee" class="employee-photo">
-      <h1>{{ employee.nome}}</h1>
-      <p>{{ employee.especialidade }}</p>
-      <p>Employee number: {{ employee.employeeNumber }}</p>
+      <div class="employee-photo-wrapper">
+        <img :src="employee.photo" alt="Employee" class="employee-photo">
+      </div>
+      <div class="employee-details">
+        <h1>{{ employee.nome }}</h1>
+        <p>{{ employee.especialidade }}</p>
+        <p style="color: black;">Employee number: {{ employee.employeeNumber }}</p>
+      </div>
+    </div>
+    <div class="search-bar">
+      <input type="text" v-model="searchTerm" placeholder="Search tasks" @input="filterTasks" />
+      <i class="fas fa-search"></i> 
+    </div>
+    <div class="tasks-table">
+      <v-table>
+        <thead style="background-color: #22638A; color: white; text-align: center;">
+          <tr>
+            <th @click="sortTasks('id')">ID <span>⇅</span></th>
+            <th @click="sortTasks('descrição')">Task <span>⇅</span></th>
+            <th @click="sortTasks('deadline')">Deadline <span>⇅</span></th>
+            <th @click="sortTasks('duration')">Estimated Duration <span>⇅</span></th>
+            <th @click="sortTasks('status')">Status <span>⇅</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="task in filteredAndSortedTasks" :key="task.id">
+            <td>{{ task.id }}</td>
+            <td>{{ task.descrição }}</td>
+            <td>{{ task.deadline }}</td>
+            <td>{{ task.duration }}</td>
+            <td :class="['status-cell', {
+              'status-waiting': task.estado === 'nafila',
+              'status-scheduled': task.estado === 'programado',
+              'status-stopped': task.estado === 'parado',
+              'status-done': task.estado === 'realizado'
+            }]">
+              <button :class="{
+                'status-waiting': task.estado === 'nafila',
+                'status-scheduled': task.estado === 'programado',
+                'status-stopped': task.estado === 'parado',
+                'status-done': task.estado === 'realizado'
+              }" disabled>{{ formatStatus(task.estado) }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
     </div>
   </div>
 </template>
@@ -17,36 +59,78 @@ export default {
     return {
       searchTerm: '',
       employee: {},
-      tasks: []
+      tasks: [],
+      sortColumn: '',
+      sortOrder: 'ascending',
     };
   },
   computed: {
-    filteredTasks() {
-      if (this.searchTerm) {
-        return this.tasks.filter(task => task.name.toLowerCase().includes(this.searchTerm.toLowerCase()));
-      }
-      return this.tasks;
-    }
+    filteredAndSortedTasks() {
+      return this.tasks
+        .filter(task => {
+          const searchLower = this.searchTerm.toLowerCase();
+          return Object.keys(task).some(key =>
+            String(task[key]).toLowerCase().includes(searchLower)
+          );
+        })
+        .sort((a, b) => {
+          let mod = this.sortOrder === 'ascending' ? 1 : -1;
+          return a[this.sortColumn] < b[this.sortColumn] ? -1 * mod : 1 * mod;
+        });
+    },
   },
   methods: {
-    performSearch() {
-      // Lógica para realizar a busca
-      console.log('Pesquisar por:', this.searchTerm);
+    async fetchTasksByEmployeeNumber(employeeNumber) {
+      try {
+        const response = await fetch(`http://localhost:3000/services?employeeNumber=${employeeNumber}`);
+        const tasksFromResponse = await response.json();
+        this.tasks = tasksFromResponse.map(task => ({
+          ...task,
+          deadline: this.formatDeadline(task.data),
+          status: this.formatStatus(task.estado),
+          duration: task.duration ? `${task.duration} minutes` : '---'
+        }));
+      } catch (error) {
+        console.error('Erro ao buscar tarefas:', error);
+      }
+    },
+    formatDeadline(data) {
+      if (!data) return '---';
+      const date = new Date(data.ano, data.mes - 1, data.dia, data.hora, data.minutos);
+      return date.toLocaleString();
+    },
+    formatStatus(estado) {
+      const statusMapping = {
+        nafila: 'WAITING',
+        realizado: 'DONE',
+        programado: 'SCHEDULED',
+        parado: 'STOPPED',
+        // Adicionar outros estados conforme necessário
+      };
+      return statusMapping[estado] || 'IN PROGRESS';
+    },
+    sortTasks(column) {
+      this.sortOrder = (this.sortColumn === column && this.sortOrder === 'ascending') ? 'descending' : 'ascending';
+      this.sortColumn = column;
+    },
+    filterTasks() {
+      // A filtragem é realizada pela propriedade computed 'filteredAndSortedTasks'
     }
   },
   async created() {
     try {
       const user = await getUser();
-      console.log('Usuário:', user);
       if (user.isLoggedIn && user.mechanic) {
+        const employeeNumber = user.mechanic.employeeNumber;
+        const photoPath = `src/assets/userphotos/${employeeNumber}.png`;
         this.employee = {
-          photo: 'path-to-employee-photo.jpg',
+          photo: photoPath,
           nome: user.mechanic.nome,
           especialidade: user.mechanic.especialidade,
           employeeNumber: user.mechanic.employeeNumber
         };
+        await this.fetchTasksByEmployeeNumber(employeeNumber);
       } else {
-        // Se o usuário não estiver logado ou se não houver detalhes do mecânico, redirecione para a página de login
         this.$router.push('/login');
       }
     } catch (error) {
@@ -57,29 +141,132 @@ export default {
 </script>
 
 <style scoped>
+
 .employee-info {
-  /* Styles for the employee info section */
+  display: flex;
+  align-items: center;
+  margin-right: 20px; 
+  margin-top: 20px; 
 }
+
+.employee-photo-wrapper {
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 20px; 
+  margin-left: 100px; 
+  margin-top: 100px;
+}
+
 .employee-photo {
-  /* Styles for the employee photo */
+  width: 300px;
+  height: 300px;
 }
-.search-field input {
-  /* Styles for the search input */
+
+.employee-details {
+  flex-grow: 1;
+  color: #22638A;
+  padding: 10px;
+  margin-top: 70px;
 }
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #f2f2f2;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 30px; 
+  margin-right: 20px; 
+  margin-top: 20px;
+}
+
+.search-bar input {
+  flex-grow: 1;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.search-bar i {
+  margin-left: 10px; 
+  color: #888;
+}
+
 .tasks-table {
-  /* Styles for the tasks table */
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px; 
+  text-align: center;
+  overflow-x: auto;
 }
-.status {
-  /* Base styles for status */
-  padding: 0.5rem;
-  border-radius: 0.5rem;
+
+.tasks-table table {
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.tasks-table th, .tasks-table td {
+  border: none;
+  padding: 8px;
+  text-align: left;
+}
+
+.tasks-table th {
+  background-color: #22638A;
   color: white;
-  font-weight: bold;
 }
-.waiting {
-  background-color: #f0ad4e; /* Bootstrap 'warning' color */
+
+.tasks-table .status-header, .tasks-table .status-cell {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.done {
-  background-color: #5cb85c; /* Bootstrap 'success' color */
+
+button {
+  border: none;
+  padding: 10px 20px;
+  cursor: default;
+  text-align: center;
+  display: block;
+  margin: 5px auto;
+  width: 80%;
+  border-radius: 20px;
+  box-shadow: 0 2px 2px rgba(0,0,0,0.2);
+  transition: background-color 0.3s;
+}
+
+button.status-waiting {
+  background-color: #90caf9;
+}
+
+button.status-waiting:hover {
+  background-color: #64b5f6;
+}
+
+button.status-scheduled {
+  background-color: #ffb74d;
+}
+
+button.status-scheduled:hover {
+  background-color: #ffa726;
+}
+
+button.status-stopped {
+  background-color: #ef5350;
+}
+
+button.status-stopped:hover {
+  background-color: #e53935;
+}
+
+button.status-done {
+  background-color: #c8e6c9;
+}
+
+button.status-done:hover {
+  background-color: #a5d6a7;
 }
 </style>

@@ -36,24 +36,19 @@ export default {
       this.currentTime = this.getCurrentTime();
     },
     checkIsLoginPage() {
-      // Verificar se a rota atual é a de login
       this.isLoginPage = this.$route.path === '/login';
     }
   },
   mounted() {
-    // Atualizar a hora a cada segundo
     this.timer = setInterval(this.updateTime, 1000);
-    // Verificar se é a página de login quando o componente é montado
     this.checkIsLoginPage();
   },
   watch: {
     '$route'(to, from) {
-      // Verificar se é a página de login quando a rota é alterada
       this.checkIsLoginPage();
     }
   },
   beforeDestroy() {
-    // Limpar o intervalo quando o componente for desmontado para evitar vazamentos de memória
     clearInterval(this.timer);
   }
 }
@@ -70,7 +65,7 @@ export default {
 }
 
 .logo img {
-  height: 70px; /* Ajuste o tamanho do logotipo conforme necessário */
+  height: 70px;
 }
 
 .clock {

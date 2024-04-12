@@ -247,7 +247,9 @@
         "service-definitionId": "sp",
         "estado": "nafila",
         "agendamento": "filaDeEspera",
-        "descrição": "Colocar XPTO 225R15"
+        "descrição": "Colocar XPTO 225R15",
+        "employeeNumber": "P0844",
+        "duration":"40"
       },
       {
         "id": "s32",
@@ -255,6 +257,8 @@
         "service-definitionId": "li",
         "estado": "programado",
         "agendamento": "programado",
+        "employeeNumber": "P0844",
+        "duration":"40",
         "data": {
           "dia": 26,
           "mes": 3,
@@ -270,7 +274,9 @@
         "service-definitionId": "le",
         "estado": "nafila",
         "agendamento": "filaDeEspera",
-        "descrição": "Ver jantes."
+        "descrição": "Ver jantes.",
+        "employeeNumber": "P0844",
+        "duration":"10"
       },
       {
         "id": "s34",
@@ -278,7 +284,9 @@
         "service-definitionId": "sfc",
         "estado": "parado",
         "agendamento": "filaDeEspera",
-        "descrição": "Falta o filtro."
+        "descrição": "Falta o filtro.",
+        "employeeNumber": "P0844",
+        "duration":"20"
       },
       {
         "id": "s12",
@@ -286,7 +294,9 @@
         "service-definitionId": "sp",
         "estado": "realizado",
         "agendamento": "filaDeEspera",
-        "descrição": "Colocar XPTO 225R15"
+        "descrição": "Colocar XPTO 225R15",
+        "employeeNumber": "P0844",
+        "duration":"40"
       },
       {
         "id": "s24",
@@ -294,6 +304,7 @@
         "service-definitionId": "li",
         "estado": "realizado",
         "agendamento": "programado",
+        "employeeNumber": "P0844",
         "data": {
           "dia": 2,
           "mes": 2,
@@ -309,7 +320,7 @@
         "id": "1",
         "employeeNumber": "P0844",
         "password": "1234",
-        "nome": "Antonio da Silva",
+        "nome": "António da Silva",
         "especialidade": "Electric Motor Expert"
       }
     ]
