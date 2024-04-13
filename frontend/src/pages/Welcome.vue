@@ -19,18 +19,20 @@
         <thead style="background-color: #22638A; color: white; text-align: center;">
           <tr>
             <th @click="sortTasks('id')">ID <span>⇅</span></th>
-            <th @click="sortTasks('descrição')">Task <span>⇅</span></th>
+            <th @click="sortTasks('service.descr')">Task <span>⇅</span></th>
+            <th @click="sortTasks('descrição')">Observation <span>⇅</span></th>
             <th @click="sortTasks('deadline')">Deadline <span>⇅</span></th>
             <th @click="sortTasks('duration')">Estimated Duration <span>⇅</span></th>
             <th @click="sortTasks('status')">Status <span>⇅</span></th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="task in filteredAndSortedTasks" :key="task.id">
+          <tr v-for="task in filteredAndSortedTasks" :key="task.id" @click="goToTaskPage(task.id)">
             <td>{{ task.id }}</td>
+            <td>{{ task.service.descr }}</td>
             <td>{{ task.descrição }}</td>
             <td>{{ task.deadline }}</td>
-            <td>{{ task.duration }}</td>
+            <td>{{ task.service.duração }}</td>
             <td :class="['status-cell', {
               'status-waiting': task.estado === 'nafila',
               'status-scheduled': task.estado === 'programado',
@@ -60,6 +62,7 @@ export default {
       searchTerm: '',
       employee: {},
       tasks: [],
+      serviceDefinitions: {}, 
       sortColumn: '',
       sortOrder: 'ascending',
     };
@@ -69,8 +72,12 @@ export default {
       return this.tasks
         .filter(task => {
           const searchLower = this.searchTerm.toLowerCase();
-          return Object.keys(task).some(key =>
-            String(task[key]).toLowerCase().includes(searchLower)
+          return (
+            String(task.service.descr).toLowerCase().includes(searchLower) ||
+            String(task.descrição).toLowerCase().includes(searchLower) || 
+            String(task.deadline).toLowerCase().includes(searchLower) ||
+            String(task.service.duração).toLowerCase().includes(searchLower) || // Usando task.service.duração
+            String(this.formatStatus(task.estado)).toLowerCase().includes(searchLower)
           );
         })
         .sort((a, b) => {
@@ -80,6 +87,23 @@ export default {
     },
   },
   methods: {
+    goToTaskPage(taskId) {
+      this.$router.push(`/task/${taskId}`);
+    },
+    mapServiceDefinitions(definitions) {
+      definitions.forEach(definition => {
+        this.serviceDefinitions[definition.id] = definition;
+      });
+    },
+    async fetchServiceDefinitions() {
+      try {
+        const response = await fetch('http://localhost:3000/service-definitions');
+        const definitions = await response.json();
+        this.mapServiceDefinitions(definitions);
+      } catch (error) {
+        console.error('Erro ao buscar definições de serviço:', error);
+      }
+    },
     async fetchTasksByEmployeeNumber(employeeNumber) {
       try {
         const response = await fetch(`http://localhost:3000/services?employeeNumber=${employeeNumber}`);
@@ -87,8 +111,8 @@ export default {
         this.tasks = tasksFromResponse.map(task => ({
           ...task,
           deadline: this.formatDeadline(task.data),
-          status: this.formatStatus(task.estado),
-          duration: task.duration ? `${task.duration} minutes` : '---'
+          duration: task.duration ? `${task.duration} minutes` : '---',
+          service: this.serviceDefinitions[task['service-definitionId']]
         }));
       } catch (error) {
         console.error('Erro ao buscar tarefas:', error);
@@ -105,7 +129,6 @@ export default {
         realizado: 'DONE',
         programado: 'SCHEDULED',
         parado: 'STOPPED',
-        // Adicionar outros estados conforme necessário
       };
       return statusMapping[estado] || 'IN PROGRESS';
     },
@@ -113,12 +136,11 @@ export default {
       this.sortOrder = (this.sortColumn === column && this.sortOrder === 'ascending') ? 'descending' : 'ascending';
       this.sortColumn = column;
     },
-    filterTasks() {
-      // A filtragem é realizada pela propriedade computed 'filteredAndSortedTasks'
-    }
   },
   async created() {
     try {
+      await this.fetchServiceDefinitions();
+      console.log('Service definitions:', this.serviceDefinitions);
       const user = await getUser();
       if (user.isLoggedIn && user.mechanic) {
         const employeeNumber = user.mechanic.employeeNumber;

@@ -248,8 +248,7 @@
         "estado": "nafila",
         "agendamento": "filaDeEspera",
         "descrição": "Colocar XPTO 225R15",
-        "employeeNumber": "P0844",
-        "duration":"40"
+        "employeeNumber": "P0844"
       },
       {
         "id": "s32",
@@ -258,7 +257,6 @@
         "estado": "programado",
         "agendamento": "programado",
         "employeeNumber": "P0844",
-        "duration":"40",
         "data": {
           "dia": 26,
           "mes": 3,
@@ -275,8 +273,7 @@
         "estado": "nafila",
         "agendamento": "filaDeEspera",
         "descrição": "Ver jantes.",
-        "employeeNumber": "P0844",
-        "duration":"10"
+        "employeeNumber": "P0844"
       },
       {
         "id": "s34",
@@ -285,8 +282,7 @@
         "estado": "parado",
         "agendamento": "filaDeEspera",
         "descrição": "Falta o filtro.",
-        "employeeNumber": "P0844",
-        "duration":"20"
+        "employeeNumber": "P0844"
       },
       {
         "id": "s12",
@@ -295,8 +291,7 @@
         "estado": "realizado",
         "agendamento": "filaDeEspera",
         "descrição": "Colocar XPTO 225R15",
-        "employeeNumber": "P0844",
-        "duration":"40"
+        "employeeNumber": "P0844"
       },
       {
         "id": "s24",
