@@ -1,89 +1,127 @@
 <template>
-    <div class="task-page">
-      <!-- Aqui iria o teu Navbar se já estiver implementado -->
-      <!-- Exemplo de como poderiam ser mostrados os detalhes da tarefa -->
-      <div v-if="taskDetails" class="task-details">
-        <h1>{{ taskDetails['service-definitionId'].descr }}</h1>
-        <p><strong>Vehicle ID:</strong> {{ taskDetails.vehicleId }}</p>
-        <p><strong>Estimated Duration:</strong> {{ taskDetails['service-definitionId'].duração }} minutes</p>
-        <p><strong>Status:</strong> {{ taskDetails.estado }}</p>
-        <p><strong>Description:</strong> {{ taskDetails.descrição }}</p>
-        
-        <div class="actions">
-          <button @click="markAsDone" class="btn-done">Done</button>
-          <button @click="suspendTask" class="btn-suspend">Suspend</button>
-          <button @click="recommendServices" class="btn-recommend">Recommend Services</button>
-        </div>
-      </div>
-      <div v-else>
-        <p>Loading task details...</p>
-      </div>
+  <div class="task-page">
+    <div class="service-name">
+      <h1>{{ serviceName }}</h1>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        taskDetails: null,
-      };
+    <div class="search-bar">
+      <input type="text" v-model="searchTerm" placeholder="Search tasks" @input="filterTasks" />
+      <i class="fas fa-search"></i> 
+    </div>
+    <div class="tasks-table">
+      <v-table>
+        <thead style="background-color: #22638A; color: white; text-align: center;">
+          <tr>
+            <th @click="sortTasks('id')">Time <span>⇅</span></th>
+            <th @click="sortTasks('service.descr')">Task <span>⇅</span></th>
+            <th @click="sortTasks('descrição')">Duration <span>⇅</span></th>
+            <th @click="sortTasks('deadline')">Observation <span>⇅</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="task in filteredAndSortedTasks" :key="task.id" @click="goToTaskPage(task.id)">
+            <td>{{ task.time }}</td>
+            <td>{{ task.descr }}</td>
+            <td>{{ task.duração }}</td>
+            <td>{{ task.observation }}</td>
+          </tr>
+        </tbody>
+      </v-table>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getUser } from '../models/user';
+
+export default {
+  data() {
+    return {
+      serviceName: '', // Para armazenar o nome do serviço
+      searchTerm: '',
+      tasks: [],
+      sortColumn: '',
+      sortOrder: 'ascending',
+    };
+  },
+  computed: {
+    filteredAndSortedTasks() {
+      return this.tasks
+        .filter(task => {
+          const searchLower = this.searchTerm.toLowerCase();
+          return (
+            task.descr.toLowerCase().includes(searchLower) ||
+            task.observation.toLowerCase().includes(searchLower) || 
+            task.time.toLowerCase().includes(searchLower) ||
+            task.duração.toLowerCase().includes(searchLower)
+          );
+        })
+        .sort((a, b) => {
+          let mod = this.sortOrder === 'ascending' ? 1 : -1;
+          return a[this.sortColumn] < b[this.sortColumn] ? -1 * mod : 1 * mod;
+        });
     },
-    methods: {
-      async getTaskDetails() {
-        const taskId = this.$route.params.id;
-        try {
-          const response = await fetch(`http://localhost:3000/services/${taskId}`);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          this.taskDetails = data;
-        } catch (error) {
-          console.error('Could not fetch task details:', error);
+  },
+  methods: {
+    async fetchServiceName(serviceDefinitionId) {
+      try {
+        const response = await fetch(`http://localhost:3000/service-definitions?id=${serviceDefinitionId}`);
+        const serviceDefinition = await response.json();
+        if (serviceDefinition.length > 0) {
+          this.serviceName = serviceDefinition[0].descr;
         }
-      },
-      async markAsDone() {
-        try {
-          const taskId = this.$route.params.id;
-          const response = await fetch(`http://localhost:3000/services/${taskId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              estado: 'realizado'
-            })
-          });
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          // Atualize os detalhes da tarefa após a marcação como concluída
-          await this.getTaskDetails();
-          console.log('Task marked as done');
-        } catch (error) {
-          console.error('Could not mark task as done:', error);
-        }
-      },
-      async suspendTask() {
-        try {
-          // Lógica para suspender a tarefa
-        } catch (error) {
-          console.error('Could not suspend task:', error);
-        }
-      },
-      async recommendServices() {
-        try {
-          // Lógica para recomendar serviços
-        } catch (error) {
-          console.error('Could not recommend services:', error);
-        }
+      } catch (error) {
+        console.error('Error fetching service name:', error);
       }
     },
-    created() {
-      this.getTaskDetails();
+    async fetchTaskDetailsByServiceId(serviceId) {
+      try {
+        const response = await fetch(`http://localhost:3000/service-description?serviceId=${serviceId}`);
+        const taskDetails = await response.json();
+        return taskDetails;
+      } catch (error) {
+        console.error('Error fetching task details:', error);
+        return [];
+      }
+    },
+    async fetchTasksByServiceId(serviceId) {
+      try {
+        const taskDetails = await this.fetchTaskDetailsByServiceId(serviceId);
+        this.tasks = taskDetails.map(task => ({
+          time: task.date,
+          descr: task.descr,
+          observation: task.observation,
+          duração: `${task.duração} minutes`
+        }));
+        console.log(this.tasks);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    },
+    sortTasks(column) {
+      this.sortOrder = (this.sortColumn === column && this.sortOrder === 'ascending') ? 'descending' : 'ascending';
+      this.sortColumn = column;
+    },
+  },
+  async created() {
+    try {
+      const user = await getUser();
+      if (user.isLoggedIn) {
+        const serviceId = this.$route.params.id;
+        await this.fetchTasksByServiceId(serviceId);
+        if (this.tasks.length > 0) {
+          const serviceDefinitionId = this.tasks[0].serviceDefinitionId;
+          await this.fetchServiceName(serviceDefinitionId);
+        }
+      } else {
+        this.$router.push('/login');
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
     }
-  };
+  }
+};
 </script>
+
 
 <style scoped>
 

@@ -3,6 +3,7 @@ import LoginView from './pages/LoginView.vue';
 import Welcome from './pages/Welcome.vue';
 import authGuard from './authGuard';
 import Task from './pages/Task.vue';
+import Vehicle from './pages/Vehicle.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -26,6 +27,12 @@ const router = createRouter({
     {
       path: '/task/:id',
       component: Task,
+      meta: { requiresAuth: true },
+      beforeEnter: authGuard
+    },
+    {
+      path: '/vehicle/:id',
+      component: Vehicle,
       meta: { requiresAuth: true },
       beforeEnter: authGuard
     }
