@@ -140,7 +140,6 @@ export default {
   async created() {
     try {
       await this.fetchServiceDefinitions();
-      console.log('Service definitions:', this.serviceDefinitions);
       const user = await getUser();
       if (user.isLoggedIn && user.mechanic) {
         const employeeNumber = user.mechanic.employeeNumber;

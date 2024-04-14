@@ -1,8 +1,15 @@
 <template>
   <div class="task-page">
+    <button class="back-button" @click="goBack">
+      <i class="fas fa-chevron-left"></i>
+    </button>
     <div class="service-name">
-      <h1>{{ serviceName }}</h1>
+      <h1>{{ service.definition?.descr }}</h1>
     </div>
+    <div class="service-type">
+      <h1>{{ service.tipo }}</h1>
+    </div>
+    <button :class="statusClass">{{ formatStatus(service.estado) }}</button>
     <div class="search-bar">
       <input type="text" v-model="searchTerm" placeholder="Search tasks" @input="filterTasks" />
       <i class="fas fa-search"></i> 
@@ -36,7 +43,7 @@ import { getUser } from '../models/user';
 export default {
   data() {
     return {
-      serviceName: '', // Para armazenar o nome do serviço
+      service: {},
       searchTerm: '',
       tasks: [],
       sortColumn: '',
@@ -60,17 +67,57 @@ export default {
           return a[this.sortColumn] < b[this.sortColumn] ? -1 * mod : 1 * mod;
         });
     },
+    statusClass() {
+      return {
+        'status-waiting': this.service.estado === 'nafila',
+        'status-scheduled': this.service.estado === 'programado',
+        'status-stopped': this.service.estado === 'parado',
+        'status-done': this.service.estado === 'realizado'
+      };
+    },
   },
   methods: {
-    async fetchServiceName(serviceDefinitionId) {
-      try {
-        const response = await fetch(`http://localhost:3000/service-definitions?id=${serviceDefinitionId}`);
-        const serviceDefinition = await response.json();
-        if (serviceDefinition.length > 0) {
-          this.serviceName = serviceDefinition[0].descr;
+    async fetchVehicleTypes() {
+        try {
+          const response = await fetch('http://localhost:3000/vehicle-types');
+          const vehicleTypes = await response.json();
+          const serviceId = this.service.definition?.id;
+
+          if (!serviceId) {
+            console.error('Service definition ID not found.');
+            return;
+          }
+
+          let serviceCategory = null;
+          vehicleTypes.forEach(vehicleType => {
+            if (vehicleType.serviços.includes(serviceId)) {
+              this.service.tipo = vehicleType.id;
+            }
+          });
+
+          // Se não encontrar uma correspondência, defina como "Desconhecido"
+          if (!serviceCategory) {
+            console.warn('Service category not found for service definition ID:', serviceId);
+            serviceCategory = 'Desconhecido';
+          }
+
+          return serviceCategory;
+        } catch (error) {
+          console.error('Error fetching vehicle types:', error);
         }
+    },
+    async fetchService(serviceId) {
+      try {
+        const serviceResponse = await fetch(`http://localhost:3000/services?id=${serviceId}`);
+        const serviceData = await serviceResponse.json();
+        this.service = serviceData[0]; 
+        const definitionResponse = await fetch(`http://localhost:3000/service-definitions?id=${this.service['service-definitionId']}`);
+        const definitionData = await definitionResponse.json();
+        this.service.definition = definitionData[0];
+
+        await this.fetchVehicleTypes();
       } catch (error) {
-        console.error('Error fetching service name:', error);
+        console.error('Error fetching service:', error);
       }
     },
     async fetchTaskDetailsByServiceId(serviceId) {
@@ -92,7 +139,6 @@ export default {
           observation: task.observation,
           duração: `${task.duração} minutes`
         }));
-        console.log(this.tasks);
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
@@ -100,6 +146,18 @@ export default {
     sortTasks(column) {
       this.sortOrder = (this.sortColumn === column && this.sortOrder === 'ascending') ? 'descending' : 'ascending';
       this.sortColumn = column;
+    },
+    formatStatus(estado) {
+      const statusMapping = {
+        nafila: 'WAITING',
+        realizado: 'DONE',
+        programado: 'SCHEDULED',
+        parado: 'STOPPED',
+      };
+      return statusMapping[estado] || 'IN PROGRESS';
+    },
+    goBack() {
+      this.$router.go(-1);
     },
   },
   async created() {
@@ -109,12 +167,13 @@ export default {
         const serviceId = this.$route.params.id;
         await this.fetchTasksByServiceId(serviceId);
         if (this.tasks.length > 0) {
-          const serviceDefinitionId = this.tasks[0].serviceDefinitionId;
-          await this.fetchServiceName(serviceDefinitionId);
+          await this.fetchService(serviceId);
         }
       } else {
         this.$router.push('/login');
       }
+      console.log('Tasks:', this.tasks);
+      console.log('Service:', this.service);
     } catch (error) {
       console.error('Error loading user data:', error);
     }
@@ -124,6 +183,30 @@ export default {
 
 
 <style scoped>
+
+button {
+  margin-top: 10px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: default;
+}
+
+.status-waiting {
+  background-color: #90caf9;
+}
+
+.status-scheduled {
+  background-color: #ffb74d;
+}
+
+.status-stopped {
+  background-color: #ef5350;
+}
+
+.status-done {
+  background-color: #c8e6c9;
+}
 
 .task-page {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -213,21 +296,43 @@ button {
   margin-left: 10px;
   border: none;
   border-radius: 4px;
-  color: white; /* Aqui estava faltando um valor para a propriedade color */
-  background-color: #4CAF50; /* Adiciona uma cor de fundo para o botão */
+  color: white; 
+  background-color: #4CAF50; 
 }
 
-/* Outros estilos do botão que podem estar faltando */
+
 .btn-done {
-  background-color: #4CAF50; /* Green */
+  background-color: #4CAF50; 
 }
 
 .btn-suspend {
-  background-color: #f0ad4e; /* Orange */
+  background-color: #f0ad4e; 
 }
 
 .btn-recommend {
-  background-color: #5bc0de; /* Light Blue */
+  background-color: #5bc0de; 
 }
+
+.back-button {
+  position: absolute;
+  left: 20px;
+  width: 40px;
+  height: 40px; 
+  border-radius: 50%; 
+  background-color: #22638A; 
+  border: none; 
+  color: white; 
+  font-size: 24px; 
+  cursor: pointer; 
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+}
+
+.back-button i {
+  width: auto;
+  height: auto;
+}
+
 
 </style>
