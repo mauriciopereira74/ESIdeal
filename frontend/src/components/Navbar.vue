@@ -13,17 +13,22 @@
 </template>
 
 <script>
+
+import { getUser } from '../models/user';
+
 export default {
   name: 'Navbar',
   data() {
     return {
       currentTime: this.getCurrentTime(),
-      isLoginPage: false
+      isLoginPage: false,
+      user: getUser()
     };
   },
   methods: {
     logout() {
       localStorage.removeItem('isLoggedIn');
+      this.user.logout();
       this.$router.push('/login');
     },
     getCurrentTime() {

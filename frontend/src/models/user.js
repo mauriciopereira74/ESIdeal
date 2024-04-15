@@ -18,4 +18,11 @@ let userState = {
       }
     };
   };
+
+  export const logout = () => {
+    userState = {
+      isLoggedIn: false,
+      mechanic: null
+    };
+  }
   

@@ -63,7 +63,7 @@ export default {
           };
           setUser(mechanicDetails);
           localStorage.setItem('isLoggedIn', 'true');
-          this.$router.push({ path: '/welcome' });
+          this.$router.push('/welcome');
         } else {
           localStorage.removeItem('isLoggedIn');  
           this.loginError = true; 

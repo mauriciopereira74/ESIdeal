@@ -135,7 +135,7 @@
             this.vehicle = await response.json();
             this.vehicle.photo = `/src/assets/vehicles/${vehicleId}.png`;
             await this.fetchClientData(this.vehicle.clientId);
-            this.vehicle.owner= this.owner;
+            this.vehicle.owner = this.owner;
             
             } catch (error) {
             console.error('There was an error fetching the vehicle data:', error);
