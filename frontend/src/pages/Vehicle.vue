@@ -1,5 +1,8 @@
 <template>
     <div class="vehicle-page">
+      <button class="back-button" @click="goBack">
+        <img class="back-icon" src="@/assets/icons/back.png">
+      </button>
       <div class="vehicle-header">
         <div class="vehicle-photo-wrapper">
           <img :src="vehicle.photo" alt="Vehicle" class="vehicle-photo">
@@ -237,5 +240,27 @@
   .tasks-table {
     /* Estilos para a tabela de tarefas */
   }
+
+  .back-button {
+  position: absolute;
+  left: 20px;
+  width: 40px;
+  height: 40px; 
+  border-radius: 50%; 
+  background-color: #22638A; 
+  border: none; 
+  color: white; 
+  font-size: 24px; 
+  cursor: pointer; 
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+}
+
+.back-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
   </style>
   

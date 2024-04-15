@@ -4,6 +4,7 @@ import Welcome from './pages/Welcome.vue';
 import authGuard from './authGuard';
 import Task from './pages/Task.vue';
 import Vehicle from './pages/Vehicle.vue';
+import Layout from './components/Layout.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -35,6 +36,10 @@ const router = createRouter({
       component: Vehicle,
       meta: { requiresAuth: true },
       beforeEnter: authGuard
+    },
+    {
+      path: '/layout',
+      component: Layout
     }
   ]
 });

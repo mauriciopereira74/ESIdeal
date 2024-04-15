@@ -138,6 +138,54 @@
         "date": "2024-04-21T13:00",
         "observation": "Done",
         "duração": 10
+      },
+      {
+        "id": 5,
+        "serviceId": "s32",
+        "descr": "Pick up, remove all the trash",
+        "date": "2024-06-26T14:15",
+        "observation": "Scheduled",
+        "duração": 10
+      },
+      {
+        "id": 6,
+        "serviceId": "s32",
+        "descr": "Vacuum",
+        "date": "2024-06-26T14:25",
+        "observation": "Scheduled",
+        "duração": 15
+      },
+      {
+        "id": 7,
+        "serviceId": "s32",
+        "descr": "Clean and condition the hard surfaces including the dash, glove compartment",
+        "date": "2024-06-26T14:40",
+        "observation": "Scheduled",
+        "duração": 10
+      },
+      {
+        "id": 8,
+        "serviceId": "s32",
+        "descr": "Clean upholstery and the Carpets",
+        "date": "2024-06-26T14:50",
+        "observation": "Scheduled",
+        "duração": 10
+      },
+      {
+        "id": 9,
+        "serviceId": "s32",
+        "descr": "Clean all the interior windows",
+        "date": "2024-06-26T15:00",
+        "observation": "Scheduled",
+        "duração": 10
+      },
+      {
+        "id": 10,
+        "serviceId": "s32", 
+        "descr": "Finish cleaning last details",
+        "date": "2024-06-26T15:10",
+        "observation": "Scheduled",
+        "duração": 5
       }
     ],
   "vehicle-types": [
