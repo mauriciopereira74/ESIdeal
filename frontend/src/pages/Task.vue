@@ -1,13 +1,17 @@
 <template>
   <div class="task-page">
     <button class="back-button" @click="goBack">
-      <i class="fas fa-chevron-left"></i>
+      <img class="back-icon" src="@/assets/icons/back.png">
     </button>
-    <div class="service-name">
-      <h1>{{ service.definition?.descr }}</h1>
-    </div>
+    <div class="format">
     <div class="service-type">
       <h1>{{ service.tipo }}</h1>
+    </div>
+    </div>
+    <div class="container">
+      <div class="service-name">
+        <h1>{{ service.definition?.descr }}</h1>
+      </div>
     </div>
     <button :class="statusClass">{{ formatStatus(service.estado) }}</button>
     <div class="search-bar">
@@ -95,7 +99,6 @@ export default {
             }
           });
 
-          // Se não encontrar uma correspondência, defina como "Desconhecido"
           if (!serviceCategory) {
             console.warn('Service category not found for service definition ID:', serviceId);
             serviceCategory = 'Desconhecido';
@@ -208,82 +211,6 @@ button {
   background-color: #c8e6c9;
 }
 
-.task-page {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  border-radius: 8px;
-  background: #fff;
-}
-
-.task-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.vehicle-details, .task-details {
-  background: #F6F7F9;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.vehicle-details {
-  display: flex;
-  align-items: center;
-}
-
-.vehicle-details img {
-  max-width: 100px;
-  margin-right: 20px;
-  border-radius: 4px;
-}
-
-.vehicle-details .vehicle-info {
-  flex-grow: 1;
-}
-
-.task-details {
-  margin-top: 20px;
-}
-
-.task-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #ddd;
-}
-
-.task-row:last-child {
-  border-bottom: none;
-}
-
-.task-row > div {
-  flex: 1;
-  padding: 0 10px;
-}
-
-.task-row .task-time {
-  flex: 0 0 100px;
-}
-
-.task-row .task-name {
-  flex: 2;
-}
-
-.task-row .task-duration {
-  flex: 1;
-  text-align: center;
-}
-
-.task-row .task-description {
-  flex: 3;
-}
 
 .actions {
   display: flex;
@@ -298,19 +225,7 @@ button {
   border-radius: 4px;
   color: white; 
   background-color: #4CAF50; 
-}
-
-
-.btn-done {
-  background-color: #4CAF50; 
-}
-
-.btn-suspend {
-  background-color: #f0ad4e; 
-}
-
-.btn-recommend {
-  background-color: #5bc0de; 
+  margin-bottom: 40px
 }
 
 .back-button {
@@ -329,9 +244,32 @@ button {
   align-items: center;
 }
 
-.back-button i {
-  width: auto;
-  height: auto;
+.back-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.container {
+    display: flex;
+    justify-content: left;
+    align-items: left;
+  }
+
+.service-name {
+  text-align: center;
+}
+
+.service-type {
+  text-align: center;
+}
+
+.format{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10vh;
+  margin-left: 85px;
 }
 
 
