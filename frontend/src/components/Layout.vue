@@ -2,13 +2,10 @@
     <v-app v-if="!isLoginPage">
       <!-- Barra de aplicativo -->
       <v-app-bar app fixed :elevation="isCollapsed ? 0 : 2" color="#22638A" dark :class="{'collapsed-app-bar': isCollapsed}">
-        <v-app-bar-nav-icon @click="toggleCollapsed">
-          <img src="@/assets/icons/collapse.png" alt="Collapse Icon" />
-        </v-app-bar-nav-icon>
-  
-        <div class="logo-container" :class="{ 'collapsed': isCollapsed }">
-          <img v-if="!isCollapsed" src="../assets/logo2.png" alt="E.S.Ideal Logo" />
-          <img v-else src="../assets/logo.png" alt="E.S.Ideal Logo" />
+
+        <div class="logo-container" :class="{ 'collapsed': isCollapsed }" @click="toggleCollapsed">
+            <img v-if="!isCollapsed" src="../assets/logo2.png" alt="E.S.Ideal Logo" />
+            <img v-else src="../assets/logo.png" alt="E.S.Ideal Logo" />
         </div>
   
         <v-toolbar-title class="toolbar-title">
@@ -148,5 +145,10 @@
     flex: 1;
     text-align: center;
   }
+
+  .logo-container img {
+    padding-left: 30px; 
+}
+
   </style>
   
