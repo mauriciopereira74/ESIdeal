@@ -1,70 +1,67 @@
 <template>
-    <div class="vehicle-page">
-      <button class="back-button" @click="goBack">
-        <img class="back-icon" src="@/assets/icons/back.png">
-      </button>
-      <div class="vehicle-header">
+  <div class="vehicle-page">
+    <div class="top-section">
+      <div class="vehicle-section">
         <div class="vehicle-photo-wrapper">
           <img :src="vehicle.photo" alt="Vehicle" class="vehicle-photo">
         </div>
         <div class="vehicle-details">
-          <div class="vehicle-attributes">
-            <h1>{{ vehicle.make }} {{ vehicle.model }}</h1>
-            <p><strong>Cilindrada:</strong> {{ vehicle.cilindrada }}cc</p>
-            <p><strong>Potência:</strong> {{ vehicle.potencia }}cv</p>
-            <p><strong>Kms:</strong> {{ vehicle.kms }}</p>
-          </div>
-          <div class="vehicle-id">
-            <h2>License Plate</h2>
-            <p class="license-plate">{{ vehicle.id }}</p>
-            <p class="owner-info">Owner: <strong>{{ vehicle.owner?.nome }}</strong></p>
-          </div>
+          <p :style="{ fontSize: '1.5em', color: '#22638A' }">{{ vehicle.modelo }}</p>
+          <p :style="{ fontSize: '0.8em', color: '#22638A' }">{{ vehicle.cilindrada }} cc</p>
+          <p>{{ vehicle.vehicleTypeId }}</p>
+          <p>{{ vehicle.kms }} kms</p>
         </div>
       </div>
-      <div class="tasks-section">
-        <div class="search-bar">
-          <input type="text" v-model="searchTerm" placeholder="Search tasks" @input="filterTasks" />
-          <i class="fas fa-search"></i> 
-        </div>
-        <div class="tasks-table">
-            <v-table>
-                <thead style="background-color: #22638A; color: white; text-align: center;">
-                <tr>
-                    <th @click="sortTasks('id')">ID <span>⇅</span></th>
-                    <th @click="sortTasks('service.descr')">Task <span>⇅</span></th>
-                    <th @click="sortTasks('descrição')">Observation <span>⇅</span></th>
-                    <th @click="sortTasks('date')">Date <span>⇅</span></th>
-                    <th @click="sortTasks('mechanic')">Mechanic<span>⇅</span></th>
-                    <th @click="sortTasks('status')">Status <span>⇅</span></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="task in tasks" :key="task.id">
-                    <td>{{ task.id }}</td>
-                    <td>{{ task.service.descr }}</td>
-                    <td>{{ task.descrição }}</td>
-                    <td>{{ task.date }}</td>
-                    <td>{{ task.mechanic.nome }}</td>
-                    <td :class="['status-cell', {
-                    'status-waiting': task.estado === 'nafila',
-                    'status-scheduled': task.estado === 'programado',
-                    'status-stopped': task.estado === 'parado',
-                    'status-done': task.estado === 'realizado'
-                    }]">
-                    <button :class="{
-                        'status-waiting': task.estado === 'nafila',
-                        'status-scheduled': task.estado === 'programado',
-                        'status-stopped': task.estado === 'parado',
-                        'status-done': task.estado === 'realizado'
-                    }" disabled>{{ formatStatus(task.estado) }}</button>
-                    </td>
-                </tr>
-                </tbody>
-            </v-table>
-            </div>
+      <h1 class="vehicle-id">{{ vehicle.id }}</h1>
+      <div class="owner-details">
+        <h1>Owner</h1>
+        <h1 class="owner-name">{{vehicle.owner?.nome}}</h1>
       </div>
     </div>
-  </template>
+
+    <div class="search-bar">
+      <input type="text" v-model="searchTerm" placeholder="Search tasks" @input="filterTasks" />
+      <img src="@/assets/icons/search.png" alt="Search" style="width: 35px;"> 
+    </div>
+
+    <div class="tasks-table">
+      <v-table>
+        <thead style="background-color: #22638A; color: white; text-align: center;">
+          <tr>
+            <th @click="sortTasks('id')">ID <span>⇅</span></th>
+            <th @click="sortTasks('service.descr')">Task <span>⇅</span></th>
+            <th @click="sortTasks('descrição')">Observation <span>⇅</span></th>
+            <th @click="sortTasks('date')">Date <span>⇅</span></th>
+            <th @click="sortTasks('mechanic')">Mechanic<span>⇅</span></th>
+            <th @click="sortTasks('status')">Status <span>⇅</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="task in tasks" :key="task.id">
+            <td>{{ task.id }}</td>
+            <td>{{ task.service.descr }}</td>
+            <td>{{ task.descrição }}</td>
+            <td>{{ task.date }}</td>
+            <td>{{ task.mechanic.nome }}</td>
+            <td :class="['status-cell', {
+            'status-waiting': task.estado === 'nafila',
+            'status-scheduled': task.estado === 'programado',
+            'status-stopped': task.estado === 'parado',
+            'status-done': task.estado === 'realizado'
+            }]">
+            <button :class="{
+                'status-waiting': task.estado === 'nafila',
+                'status-scheduled': task.estado === 'programado',
+                'status-stopped': task.estado === 'parado',
+                'status-done': task.estado === 'realizado'
+            }" disabled>{{ formatStatus(task.estado) }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </div>
+  </div>
+</template>
   
   <script>
   export default {
@@ -183,84 +180,91 @@
   </script>
   
   <style scoped>
-  .vehicle-header {
-    display: flex;
-    margin-bottom: 20px;
-  }
-  
-  .vehicle-photo-wrapper {
-    flex-shrink: 0;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-right: 20px;
-  }
-  
-  .vehicle-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .vehicle-details {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-  }
-  
-  .vehicle-attributes {
-    flex-grow: 1;
-  }
-  
-  .vehicle-id {
-    text-align: right;
-  }
-  
-  .license-plate {
-    background: #EFEFEF;
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin-top: 10px;
-  }
-  
-  .owner-info {
-    margin-top: 10px;
-  }
-  
-  .tasks-section {
-    /* Estilos para a seção de tarefas */
-  }
-  
-  .search-bar {
-    /* Estilos para a barra de busca */
-  }
-  
-  .tasks-table {
-    /* Estilos para a tabela de tarefas */
-  }
 
-  .back-button {
-  position: absolute;
-  left: 20px;
-  width: 40px;
-  height: 40px; 
-  border-radius: 50%; 
-  background-color: #22638A; 
-  border: none; 
-  color: white; 
-  font-size: 24px; 
-  cursor: pointer; 
-  display: flex; 
-  justify-content: center;
-  align-items: center;
+.vehicle-page {
+  padding: 20px;
 }
 
-.back-icon {
-  width: 24px;
-  height: 24px;
+.vehicle-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.vehicle-photo-wrapper {
   border-radius: 50%;
+  overflow: hidden;
+  width: 250px;
+  height: 250px;
+  margin-right: 20px;
+  margin-left: 100px;
+  margin-top: 35px;
+}
+  
+.vehicle-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+  
+.vehicle-details {
+  margin-left: 20px;
+}
+  
+.vehicle-attributes {
+  flex-grow: 1;
+}
+
+.vehicle-id {
+  text-align: right;
+}
+.vehicle-id{
+  color:#22638A;
+}
+
+.owner-details {
+  color:#22638A;
+  margin-left: 20px;
+}
+
+
+.owner-name{
+  font-size: large;
+}
+  
+  
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #f2f2f2;
+  padding: 10px;
+  border-radius: 5px;
+  margin-right: 20px;
+  margin-left: auto; 
+  width: fit-content;
+}
+
+.search-bar input {
+  flex-grow: 1;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+}
+  
+.tasks-table {
+  margin-top: 20px;
+}
+  
+.top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+  
+.vehicle-section {
+  display: flex;
+  align-items: center;
 }
   </style>
   

@@ -12,7 +12,7 @@
     </div>
     <div class="search-bar">
       <input type="text" v-model="searchTerm" placeholder="Search tasks" @input="filterTasks" />
-      <i class="fas fa-search"></i> 
+      <img src="@/assets/icons/search.png" alt="Search" style="width: 35px;"> 
     </div>
     <div class="tasks-table">
       <v-table>
@@ -23,7 +23,7 @@
             <th @click="sortTasks('descrição')">Observation <span>⇅</span></th>
             <th @click="sortTasks('deadline')">Deadline <span>⇅</span></th>
             <th @click="sortTasks('duration')">Estimated Duration <span>⇅</span></th>
-            <th @click="sortTasks('status')">Status <span>⇅</span></th>
+            <th @click="sortTasks('status')" class="status-header">Status <span>⇅</span></th>
           </tr>
         </thead>
         <tbody>
@@ -173,14 +173,15 @@ export default {
 .employee-photo-wrapper {
   border-radius: 50%;
   overflow: hidden;
+  height: 250px;
   margin-right: 20px; 
   margin-left: 100px; 
-  margin-top: 100px;
+  margin-top: 35px;
 }
 
 .employee-photo {
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
 }
 
 .employee-details {
@@ -196,9 +197,26 @@ export default {
   background-color: #f2f2f2;
   padding: 10px;
   border-radius: 5px;
-  margin-bottom: 30px; 
-  margin-right: 20px; 
-  margin-top: 20px;
+  margin-right: 20px;
+  margin-left: auto; 
+  width: fit-content;
+}
+
+.tasks-header {
+  display: flex;
+  justify-content: flex-end; 
+  margin-bottom: 10px;
+}
+
+.tasks-table th.status-header {
+  text-align: center; 
+}
+
+.tasks-table .status-cell {
+  text-align: center; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-bar input {
@@ -206,11 +224,6 @@ export default {
   border: none;
   padding: 8px;
   border-radius: 5px;
-}
-
-.search-bar i {
-  margin-left: 10px; 
-  color: #888;
 }
 
 .tasks-table {
@@ -244,6 +257,21 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.tasks-table tr:hover {
+  background-color: #e0f7fa;
+  cursor: pointer; 
+  transition: background-color 0.3s ease; 
+}
+
+.tasks-table tr:active {
+  background-color: #b2ebf2;
+}
+
+.tasks-table tr:focus {
+  outline: none; 
+  background-color: #b2ebf2; 
 }
 
 button {

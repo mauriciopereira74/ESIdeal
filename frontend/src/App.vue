@@ -1,7 +1,11 @@
 <template>
   <div id="app">
-    <Layout/>
-    <router-view/>
+    <div v-if="!isLoginPage">
+      <Layout/>
+    </div>
+    <div v-else>
+      <router-view/>
+    </div>
   </div>
 </template>
 
@@ -11,6 +15,24 @@ import Layout from './components/Layout.vue';
 export default {
   components: {
     Layout
+  },
+  methods: {
+    checkIsLoginPage() {
+      this.isLoginPage = this.$route.path === '/login';
+    }
+  },
+  data() {
+    return {
+      isLoginPage: false
+    };
+  },
+  watch: {
+    '$route'(to, from) {
+      this.checkIsLoginPage();
+    }
+  },
+  mounted() {
+    this.checkIsLoginPage();
   }
 };
 </script>

@@ -106,88 +106,96 @@
       "duração": 20
     }
   ],
-    "service-description": [
-      {
-        "id": 1,
-        "serviceId": "s31",
-        "descr": "Take off the tires and change it",
-        "date": "2024-04-21T12:00",
-        "observation": "Everything seems fine",
-        "duração": 25
-      },
-      {
-        "id": 2,
-        "serviceId": "s31",
-        "descr": "Put new ones",
-        "date": "2024-04-21T12:25",
-        "observation": "Done",
-        "duração": 10
-      },
-      {
-        "id": 3,
-        "serviceId": "s31",
-        "descr": "Align direction",
-        "date": "2024-04-21T12:35",
-        "observation": "Everything seems fine",
-        "duração": 25
-      },
-      {
-        "id": 4,
-        "serviceId": "s31",
-        "descr": "Wash the car",
-        "date": "2024-04-21T13:00",
-        "observation": "Done",
-        "duração": 10
-      },
-      {
-        "id": 5,
-        "serviceId": "s32",
-        "descr": "Pick up, remove all the trash",
-        "date": "2024-06-26T14:15",
-        "observation": "Scheduled",
-        "duração": 10
-      },
-      {
-        "id": 6,
-        "serviceId": "s32",
-        "descr": "Vacuum",
-        "date": "2024-06-26T14:25",
-        "observation": "Scheduled",
-        "duração": 15
-      },
-      {
-        "id": 7,
-        "serviceId": "s32",
-        "descr": "Clean and condition the hard surfaces including the dash, glove compartment",
-        "date": "2024-06-26T14:40",
-        "observation": "Scheduled",
-        "duração": 10
-      },
-      {
-        "id": 8,
-        "serviceId": "s32",
-        "descr": "Clean upholstery and the Carpets",
-        "date": "2024-06-26T14:50",
-        "observation": "Scheduled",
-        "duração": 10
-      },
-      {
-        "id": 9,
-        "serviceId": "s32",
-        "descr": "Clean all the interior windows",
-        "date": "2024-06-26T15:00",
-        "observation": "Scheduled",
-        "duração": 10
-      },
-      {
-        "id": 10,
-        "serviceId": "s32", 
-        "descr": "Finish cleaning last details",
-        "date": "2024-06-26T15:10",
-        "observation": "Scheduled",
-        "duração": 5
-      }
-    ],
+  "service-description": [
+    {
+      "id": 100,
+      "serviceId": "s31",
+      "descr": "Take off the tires and change it",
+      "date": "2024-04-21T12:00",
+      "observation": "Everything seems fine",
+      "duração": 25
+    },
+    {
+      "id": 101,
+      "serviceId": "s31",
+      "descr": "Put new ones",
+      "date": "2024-04-21T12:25",
+      "observation": "Done",
+      "duração": 10
+    },
+    {
+      "id": 102,
+      "serviceId": "s31",
+      "descr": "Align direction",
+      "date": "2024-04-21T12:35",
+      "observation": "Everything seems fine",
+      "duração": 25
+    },
+    {
+      "id": 103,
+      "serviceId": "s31",
+      "descr": "Wash the car",
+      "date": "2024-04-21T13:00",
+      "observation": "Done",
+      "duração": 10
+    },
+    {
+      "id": 200,
+      "serviceId": "s32",
+      "descr": "Pick up, remove all the trash",
+      "date": "2024-06-26T14:15",
+      "observation": "Scheduled",
+      "duração": 10
+    },
+    {
+      "id": 201,
+      "serviceId": "s32",
+      "descr": "Vacuum",
+      "date": "2024-06-26T14:25",
+      "observation": "Scheduled",
+      "duração": 15
+    },
+    {
+      "id": 202,
+      "serviceId": "s32",
+      "descr": "Clean and condition the hard surfaces including the dash, glove compartment",
+      "date": "2024-06-26T14:40",
+      "observation": "Scheduled",
+      "duração": 10
+    },
+    {
+      "id": 203,
+      "serviceId": "s32",
+      "descr": "Clean upholstery and the Carpets",
+      "date": "2024-06-26T14:50",
+      "observation": "Scheduled",
+      "duração": 10
+    },
+    {
+      "id": 204,
+      "serviceId": "s32",
+      "descr": "Clean all the interior windows",
+      "date": "2024-06-26T15:00",
+      "observation": "Scheduled",
+      "duração": 10
+    },
+    {
+      "id": 205,
+      "serviceId": "s32",
+      "descr": "Finish cleaning last details",
+      "date": "2024-06-26T15:10",
+      "observation": "Scheduled",
+      "duração": 5
+    },
+    {
+      "id": 104,
+      "serviceId": "s31",
+      "descr": "wash wheels",
+      "date": "2024-04-21T14:10",
+      "observation": "Good",
+      "duração": 20
+    }
+  ],
   "vehicle-types": [
     {
       "id": "gasolina",
@@ -246,9 +254,9 @@
         "ad",
         "sct",
         "mot",
-        "li", 
-        "le", 
-        "sfah" 
+        "li",
+        "le",
+        "sfah"
       ]
     }
   ],
@@ -276,28 +284,32 @@
     {
       "id": "08-25-AA",
       "clientId": "123",
-      "vehicle-typeId": "gasolina",
+      "vehicleTypeId": "gasolina",
+      "modelo": "Opel Corsa",
       "cilindrada": 1000,
       "kms": 200000
     },
     {
       "id": "AH-31-BB",
       "clientId": "124",
-      "vehicle-typeId": "gasoleo",
+      "vehicleTypeId": "gasoleo",
+      "modelo": "Honda S2000",
       "cilindrada": 2000,
       "kms": 120000
     },
     {
       "id": "AH-32-44",
       "clientId": "123",
-      "vehicle-typeId": "eletrico",
+      "vehicleTypeId": "eletrico",
+      "modelo": "Tesla Model 3",
       "potencia": 200,
       "kms": 20000
     },
     {
       "id": "AH-21-25",
       "clientId": "125",
-      "vehicle-typeId": "hibrido",
+      "vehicleTypeId": "hibrido",
+      "modelo": "Toyota Prius",
       "cilindrada": 1000,
       "potencia": 200,
       "kms": 80000

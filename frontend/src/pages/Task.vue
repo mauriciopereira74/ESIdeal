@@ -1,23 +1,58 @@
 <template>
   <div class="task-page">
-    <button class="back-button" @click="goBack">
-      <img class="back-icon" src="@/assets/icons/back.png">
-    </button>
-    <div class="format">
-    <div class="service-type">
-      <h1>{{ service.tipo }}</h1>
+    <div class="top-section">
+      <div class="vehicle-section" @click="goTo(service.vehicleId)" :style="{ cursor: 'pointer' }">
+        <div class="vehicle-photo-wrapper">
+          <img :src="`/src/assets/vehicles/${service.vehicleId}.png`" alt="Vehicle" class="vehicle-photo">
+        </div>
+        <div class="vehicle-details">
+          <p :style="{ fontSize: '1.5em', color: '#22638A' }">{{ service.vehicle?.modelo }}</p>
+          <p :style="{ fontSize: '0.8em', color: '#22638A' }">{{ service.vehicle?.cilindrada }} cc</p>
+          <p>{{ service.vehicle?.vehicleTypeId }}</p>
+          <p>{{ service.vehicle?.kms }} kms</p>
+        </div>
+      </div>
+      <h1 class="service-type">{{ service.tipo }}</h1>
+      <div class="status-button-wrapper">
+        <button :class="statusClass" class="status-button">{{ formatStatus(service.estado) }}</button>
+      </div>
     </div>
-    </div>
+
     <div class="container">
       <div class="service-name">
         <h1>{{ service.definition?.descr }}</h1>
       </div>
     </div>
-    <button :class="statusClass">{{ formatStatus(service.estado) }}</button>
+
+    <v-btn color="primary" class="mb-2" @click="toggleStatusForm">Change State</v-btn>
+
+    <v-dialog v-model="showStatusForm" persistent max-width="400px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Change Status</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-select v-model="newStatus" :items="statusOptions" label="Status" item-text="text" item-value="value" class="status-select"></v-select>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="showStatusForm = false">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="changeStatus">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <div class="search-bar">
       <input type="text" v-model="searchTerm" placeholder="Search tasks" @input="filterTasks" />
-      <i class="fas fa-search"></i> 
+      <img src="@/assets/icons/search.png" alt="Search" style="width: 35px;"> 
     </div>
+
     <div class="tasks-table">
       <v-table>
         <thead style="background-color: #22638A; color: white; text-align: center;">
@@ -38,6 +73,65 @@
         </tbody>
       </v-table>
     </div>
+
+    <v-btn color="primary" class="mb-2" @click="toggleAddTaskForm">Add Task</v-btn>
+
+    <v-dialog v-model="showAddTaskForm" persistent max-width="600px">
+      <v-form v-model="valid" ref="form">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Add Task</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="newTask.descr"
+                    label="Description"
+                    :rules="descrRules"
+                    required
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="newTask.date"
+                    label="Date & Time"
+                    type="datetime-local"
+                    :rules="dateRules"
+                    required
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model.number="newTask.duração"
+                    label="Duration (minutes)"
+                    type="number"
+                    :rules="durationRules"
+                    required
+                  ></v-text-field>
+                </v-col>
+
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="newTask.observation"
+                    label="Observation"
+                    :rules="observationRules"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="showAddTaskForm = false">Close</v-btn>
+            <v-btn color="blue darken-1" text @click="addTask">Save</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
+    </v-dialog>
   </div>
 </template>
 
@@ -52,24 +146,51 @@ export default {
       tasks: [],
       sortColumn: '',
       sortOrder: 'ascending',
+      showAddTaskForm: false,
+      showStatusForm: false,
+      newTask: {
+        id: null,
+        serviceId: "",
+        descr: "",
+        date: "",
+        observation: "",
+        duração: null
+      },
+      descrRules: [
+        v => !!v || 'Description is required',
+        v => (v && v.length <= 20) || 'Description must be less than 20 characters'
+      ],
+      dateRules: [
+        v => !!v || 'Date and time are required'
+      ],
+      durationRules: [
+        v => !!v || 'Duration is required',
+        v => !isNaN(parseFloat(v)) && v > 0 || 'Duration must be a positive number'
+      ],
+      observationRules: [
+        // Any observation rules you may have
+      ],
+      statusOptions: [
+        { value: "nafila", text: "Waiting" },
+        { value: "programado", text: "Scheduled" },
+        { value: "parado", text: "Stopped" },
+        { value: "realizado", text: "Done" }
+      ],
+      newStatus: ''
     };
   },
   computed: {
     filteredAndSortedTasks() {
-      return this.tasks
-        .filter(task => {
-          const searchLower = this.searchTerm.toLowerCase();
-          return (
-            task.descr.toLowerCase().includes(searchLower) ||
-            task.observation.toLowerCase().includes(searchLower) || 
-            task.time.toLowerCase().includes(searchLower) ||
-            task.duração.toLowerCase().includes(searchLower)
-          );
-        })
-        .sort((a, b) => {
-          let mod = this.sortOrder === 'ascending' ? 1 : -1;
-          return a[this.sortColumn] < b[this.sortColumn] ? -1 * mod : 1 * mod;
-        });
+      return this.tasks.filter(task => {
+        const searchLower = this.searchTerm.toLowerCase();
+        return task.descr.toLowerCase().includes(searchLower) ||
+               task.observation.toLowerCase().includes(searchLower) || 
+               task.time.toLowerCase().includes(searchLower) ||
+               task.duração.toLowerCase().includes(searchLower);
+      }).sort((a, b) => {
+        let mod = this.sortOrder === 'ascending' ? 1 : -1;
+        return a[this.sortColumn] < b[this.sortColumn] ? -1 * mod : 1 * mod;
+      });
     },
     statusClass() {
       return {
@@ -86,24 +207,20 @@ export default {
           const response = await fetch('http://localhost:3000/vehicle-types');
           const vehicleTypes = await response.json();
           const serviceId = this.service.definition?.id;
-
           if (!serviceId) {
             console.error('Service definition ID not found.');
             return;
           }
-
           let serviceCategory = null;
           vehicleTypes.forEach(vehicleType => {
             if (vehicleType.serviços.includes(serviceId)) {
               this.service.tipo = vehicleType.id;
             }
           });
-
           if (!serviceCategory) {
             console.warn('Service category not found for service definition ID:', serviceId);
             serviceCategory = 'Desconhecido';
           }
-
           return serviceCategory;
         } catch (error) {
           console.error('Error fetching vehicle types:', error);
@@ -114,11 +231,21 @@ export default {
         const serviceResponse = await fetch(`http://localhost:3000/services?id=${serviceId}`);
         const serviceData = await serviceResponse.json();
         this.service = serviceData[0]; 
+
+        // Corrigindo o formato dos dados de estado
+        const estado = this.service.estado;
+        if (estado === "nafila" || estado === "programado" || estado === "parado" || estado === "realizado") {
+          this.newStatus = estado;
+        } else {
+          console.error("Estado inválido:", estado);
+        }
+
         const definitionResponse = await fetch(`http://localhost:3000/service-definitions?id=${this.service['service-definitionId']}`);
         const definitionData = await definitionResponse.json();
         this.service.definition = definitionData[0];
 
         await this.fetchVehicleTypes();
+        await this.fetchVehicle(this.service.vehicleId);
       } catch (error) {
         console.error('Error fetching service:', error);
       }
@@ -133,10 +260,22 @@ export default {
         return [];
       }
     },
+    async fetchVehicle(vehicleId) {
+      try {
+        const response = await fetch(`http://localhost:3000/vehicles?id=${vehicleId}`);
+        const vehicle = await response.json();
+        this.service.vehicle = vehicle[0];  // Assuming the endpoint returns an array with one element
+        console.log('Vehicle:', this.service.vehicle);
+      } catch (error) {
+        console.error('Error fetching vehicle:', error);
+      }
+    },
     async fetchTasksByServiceId(serviceId) {
       try {
         const taskDetails = await this.fetchTaskDetailsByServiceId(serviceId);
         this.tasks = taskDetails.map(task => ({
+          id: task.id,
+          serviceId: task.serviceId,
           time: task.date,
           descr: task.descr,
           observation: task.observation,
@@ -146,10 +285,12 @@ export default {
         console.error('Error fetching tasks:', error);
       }
     },
+
     sortTasks(column) {
       this.sortOrder = (this.sortColumn === column && this.sortOrder === 'ascending') ? 'descending' : 'ascending';
       this.sortColumn = column;
     },
+
     formatStatus(estado) {
       const statusMapping = {
         nafila: 'WAITING',
@@ -159,8 +300,79 @@ export default {
       };
       return statusMapping[estado] || 'IN PROGRESS';
     },
-    goBack() {
-      this.$router.go(-1);
+
+    goTo(vehicleId) {
+    this.$router.push(`/vehicle/${vehicleId}`);
+    },
+
+    async addTask() {
+      if (this.$refs.form.validate()) {
+        const maxId = this.tasks
+          .filter(task => task.serviceId === this.service.id)
+          .reduce((max, task) => Math.max(max, task.id), 0);
+
+        if (this.newTask.descr && this.newTask.date && this.newTask.duração) {
+          const res = {
+            id: maxId + 1,
+            serviceId: this.service.id,
+            descr: this.newTask.descr,
+            date: this.newTask.date,
+            observation: this.newTask.observation,
+            duração: this.newTask.duração
+          };
+
+          try {
+            const response = await fetch('http://localhost:3000/service-description', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(res)
+            });
+
+            if (!response.ok) throw new Error('Network response was not ok.');
+
+            await this.fetchTasksByServiceId(this.service.id);
+
+            this.newTask = { serviceId: this.newTask.serviceId, descr: '', date: '', observation: '', duração: 0 };
+
+          } catch (error) {
+            console.error('Error adding new task:', error);
+            alert('Failed to add new task.');
+          }
+        } else {
+          alert('Please fill in all fields for the task.');
+        }
+        this.showAddTaskForm = false;
+      }
+    },
+    toggleAddTaskForm() {
+      this.showAddTaskForm = !this.showAddTaskForm;
+    },
+
+    toggleStatusForm() {
+      this.newStatus = this.service.estado;
+      this.showStatusForm = !this.showStatusForm;
+    },
+
+    async changeStatus() {
+      try {
+        const response = await fetch(`http://localhost:3000/services/${this.service.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ estado: this.newStatus })
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok.');
+
+        this.service.estado = this.newStatus;
+        this.showStatusForm = false;
+      } catch (error) {
+        console.error('Error changing status:', error);
+        alert('Failed to change status.');
+      }
     },
   },
   async created() {
@@ -175,8 +387,6 @@ export default {
       } else {
         this.$router.push('/login');
       }
-      console.log('Tasks:', this.tasks);
-      console.log('Service:', this.service);
     } catch (error) {
       console.error('Error loading user data:', error);
     }
@@ -187,90 +397,123 @@ export default {
 
 <style scoped>
 
-button {
-  margin-top: 10px;
-  padding: 8px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: default;
+.task-page {
+  padding: 20px;
 }
 
-.status-waiting {
-  background-color: #90caf9;
-}
-
-.status-scheduled {
-  background-color: #ffb74d;
-}
-
-.status-stopped {
-  background-color: #ef5350;
-}
-
-.status-done {
-  background-color: #c8e6c9;
-}
-
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
+.service-name{
+  color:#22638A;
   padding-top: 20px;
 }
 
-button {
-  padding: 10px 20px;
-  margin-left: 10px;
-  border: none;
-  border-radius: 4px;
-  color: white; 
-  background-color: #4CAF50; 
-  margin-bottom: 40px
+.top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.back-button {
-  position: absolute;
-  left: 20px;
-  width: 40px;
-  height: 40px; 
-  border-radius: 50%; 
-  background-color: #22638A; 
-  border: none; 
-  color: white; 
-  font-size: 24px; 
-  cursor: pointer; 
-  display: flex; 
-  justify-content: center;
+.vehicle-section {
+  display: flex;
   align-items: center;
 }
 
-.back-icon {
-  width: 24px;
-  height: 24px;
+.vehicle-photo-wrapper {
   border-radius: 50%;
+  overflow: hidden;
+  width: 250px;
+  height: 250px;
+  margin-right: 20px;
+  margin-left: 100px;
+  margin-top: 35px;
 }
 
-.container {
-    display: flex;
-    justify-content: left;
-    align-items: left;
-  }
+.vehicle-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-.service-name {
-  text-align: center;
+.vehicle-details {
+  margin-left: 20px;
+}
+
+.service-type-and-status {
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 20px;
 }
 
 .service-type {
   text-align: center;
+  margin-right: 20px; /* Adjust as needed */
 }
 
-.format{
+.status-button {
+  padding: 15px 40px; /* Increase padding for larger button */
+  border: none;
+  border-radius: 5px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2em; /* Larger text size */
+}
+
+button.status-waiting {
+  background-color: #90caf9;
+}
+
+button.status-scheduled {
+  background-color: #ffb74d;
+}
+
+button.status-stopped {
+  background-color: #ef5350;
+}
+
+button.status-done {
+  background-color: #c8e6c9;
+}
+
+.search-bar {
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 10vh;
-  margin-left: 85px;
+  background-color: #f2f2f2;
+  padding: 10px;
+  border-radius: 5px;
+  margin-right: 20px;
+  margin-left: auto; 
+  width: fit-content;
 }
 
+.search-bar input {
+  flex-grow: 1;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.tasks-table {
+  margin-top: 20px;
+}
+
+.status-select {
+  width: 100%;
+}
+
+.v-list-item:hover {
+  background-color: #E0E0E0;
+}
+
+.v-list-item--active {
+  background-color: #22638A !important;
+}
 
 </style>
