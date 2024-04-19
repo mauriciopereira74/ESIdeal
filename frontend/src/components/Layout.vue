@@ -86,7 +86,7 @@
         this.currentTime = this.getCurrentTime();
       },
       goBack() {
-        this.$router.go(-1);
+        if (this.$route.path !== '/welcome') this.$router.go(-1);
       }
     },
     mounted() {
@@ -133,6 +133,10 @@
   width: calc(100% - 56px);
 }
 
+.logout {
+  margin-right: 20px;
+}
+
 .logout button {
   background-color: #d9534f;
   border: none;
@@ -156,6 +160,7 @@
 }
 
 .toolbar-title {
+  font-size: 2em;
   flex: 1;
   text-align: center;
 }

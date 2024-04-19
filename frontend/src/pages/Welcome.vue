@@ -163,6 +163,11 @@ export default {
 
 <style scoped>
 
+.welcome-page {
+  padding: 20px;
+  padding-left: 50px;
+}
+
 .employee-info {
   display: flex;
   align-items: center;
@@ -175,7 +180,7 @@ export default {
   overflow: hidden;
   height: 250px;
   margin-right: 20px; 
-  margin-left: 100px; 
+  margin-left: auto; 
   margin-top: 35px;
 }
 
@@ -288,34 +293,19 @@ button {
 }
 
 button.status-waiting {
-  background-color: #90caf9;
-}
-
-button.status-waiting:hover {
-  background-color: #64b5f6;
+  background-color: #5DB5DA;
 }
 
 button.status-scheduled {
-  background-color: #ffb74d;
-}
-
-button.status-scheduled:hover {
-  background-color: #ffa726;
+  background-color: #EEA73E;
 }
 
 button.status-stopped {
-  background-color: #ef5350;
-}
-
-button.status-stopped:hover {
-  background-color: #e53935;
+  background-color: #DA5D74;
 }
 
 button.status-done {
-  background-color: #c8e6c9;
+  background-color: #5DDA79;
 }
 
-button.status-done:hover {
-  background-color: #a5d6a7;
-}
 </style>

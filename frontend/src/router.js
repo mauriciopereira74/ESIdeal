@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LoginView from './pages/LoginView.vue';
+import Login from './pages/Login.vue';
 import Welcome from './pages/Welcome.vue';
 import authGuard from './authGuard';
 import Task from './pages/Task.vue';
@@ -15,7 +15,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'Login',
-      component: LoginView
+      component: Login
     },
     {
       path: '/welcome',

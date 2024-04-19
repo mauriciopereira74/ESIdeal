@@ -14,8 +14,9 @@
       </div>
       <h1 class="vehicle-id">{{ vehicle.id }}</h1>
       <div class="owner-details">
-        <h1>Owner</h1>
+        <h1 class="owner">Owner</h1>
         <h1 class="owner-name">{{vehicle.owner?.nome}}</h1>
+        <h1 class="owner-phone">+351 {{vehicle.owner?.telefone}}</h1>
       </div>
     </div>
 
@@ -33,7 +34,7 @@
             <th @click="sortTasks('descrição')">Observation <span>⇅</span></th>
             <th @click="sortTasks('date')">Date <span>⇅</span></th>
             <th @click="sortTasks('mechanic')">Mechanic<span>⇅</span></th>
-            <th @click="sortTasks('status')">Status <span>⇅</span></th>
+            <th @click="sortTasks('status')" class="status-header">Status <span>⇅</span></th>
           </tr>
         </thead>
         <tbody>
@@ -44,17 +45,17 @@
             <td>{{ task.date }}</td>
             <td>{{ task.mechanic.nome }}</td>
             <td :class="['status-cell', {
-            'status-waiting': task.estado === 'nafila',
-            'status-scheduled': task.estado === 'programado',
-            'status-stopped': task.estado === 'parado',
-            'status-done': task.estado === 'realizado'
+              'status-waiting': task.estado === 'nafila',
+              'status-scheduled': task.estado === 'programado',
+              'status-stopped': task.estado === 'parado',
+              'status-done': task.estado === 'realizado'
             }]">
-            <button :class="{
+              <button :class="{
                 'status-waiting': task.estado === 'nafila',
                 'status-scheduled': task.estado === 'programado',
                 'status-stopped': task.estado === 'parado',
                 'status-done': task.estado === 'realizado'
-            }" disabled>{{ formatStatus(task.estado) }}</button>
+              }" disabled>{{ formatStatus(task.estado) }}</button>
             </td>
           </tr>
         </tbody>
@@ -166,12 +167,11 @@
             }
         },
         formatStatus(estado) {
-            // Mapeia os estados para os valores de exibição
             const statusMapping = {
-                nafila: 'Waiting',
-                programado: 'Scheduled',
-                parado: 'Stopped',
-                realizado: 'Done',
+                nafila: 'WAITING',
+                programado: 'SCHEDULED',
+                parado: 'STOPPED',
+                realizado: 'DONE',
             };
             return statusMapping[estado] || 'Unknown';
         },
@@ -183,6 +183,7 @@
 
 .vehicle-page {
   padding: 20px;
+  padding-left: 50px;
 }
 
 .vehicle-header {
@@ -197,7 +198,7 @@
   width: 250px;
   height: 250px;
   margin-right: 20px;
-  margin-left: 100px;
+  margin-left: auto;
   margin-top: 35px;
 }
   
@@ -216,20 +217,27 @@
 }
 
 .vehicle-id {
+  font-size: 2.5em;
   text-align: right;
-}
-.vehicle-id{
   color:#22638A;
 }
 
 .owner-details {
   color:#22638A;
-  margin-left: 20px;
+  margin-right: 30px;
 }
 
+.owner{
+  font-size: 2em;
 
+}
 .owner-name{
-  font-size: large;
+  font-size: 1.5em;
+}
+
+.owner-phone{
+  color: #5B5656;
+  font-size: 1em;
 }
   
   
@@ -250,11 +258,7 @@
   padding: 8px;
   border-radius: 5px;
 }
-  
-.tasks-table {
-  margin-top: 20px;
-}
-  
+   
 .top-section {
   display: flex;
   justify-content: space-between;
@@ -266,5 +270,102 @@
   display: flex;
   align-items: center;
 }
-  </style>
+
+.tasks-table th.status-header {
+  text-align: center; 
+}
+
+.tasks-table .status-cell {
+  text-align: center; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-bar input {
+  flex-grow: 1;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.tasks-table {
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px; 
+  text-align: center;
+  overflow-x: auto;
+}
+
+.tasks-table table {
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.tasks-table th, .tasks-table td {
+  border: none;
+  padding: 8px;
+  text-align: left;
+}
+
+.tasks-table th {
+  background-color: #22638A;
+  color: white;
+}
+
+.tasks-table .status-header, .tasks-table .status-cell {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tasks-table tr:hover {
+  background-color: #e0f7fa;
+  cursor: pointer; 
+  transition: background-color 0.3s ease; 
+}
+
+.tasks-table tr:active {
+  background-color: #b2ebf2;
+}
+
+.tasks-table tr:focus {
+  outline: none; 
+  background-color: #b2ebf2; 
+}
+
+button {
+  border: none;
+  padding: 10px 20px;
+  cursor: default;
+  text-align: center;
+  display: block;
+  margin: 5px auto;
+  width: 80%;
+  border-radius: 20px;
+  box-shadow: 0 2px 2px rgba(0,0,0,0.2);
+  transition: background-color 0.3s;
+}
+
+button.status-waiting {
+  background-color: #5DB5DA;
+}
+
+button.status-scheduled {
+  background-color: #EEA73E;
+}
+
+button.status-stopped {
+  background-color: #DA5D74;
+}
+
+button.status-done {
+  background-color: #5DDA79;
+}
+
+
+</style>
   

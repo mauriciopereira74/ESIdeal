@@ -1,12 +1,12 @@
 <template>
   <div class="task-page">
     <div class="top-section">
-      <div class="vehicle-section" @click="goTo(service.vehicleId)" :style="{ cursor: 'pointer' }">
+      <div class="vehicle-section" :style="{ cursor: 'pointer' }">
         <div class="vehicle-photo-wrapper">
           <img :src="`/src/assets/vehicles/${service.vehicleId}.png`" alt="Vehicle" class="vehicle-photo">
         </div>
-        <div class="vehicle-details">
-          <p :style="{ fontSize: '1.5em', color: '#22638A' }">{{ service.vehicle?.modelo }}</p>
+        <div class="vehicle-details" @click="goTo(service.vehicleId)">
+          <p class="vehicle-model">{{ service.vehicle?.modelo }}</p>
           <p :style="{ fontSize: '0.8em', color: '#22638A' }">{{ service.vehicle?.cilindrada }} cc</p>
           <p>{{ service.vehicle?.vehicleTypeId }}</p>
           <p>{{ service.vehicle?.kms }} kms</p>
@@ -18,13 +18,14 @@
       </div>
     </div>
 
-    <div class="container">
+    <div class="description-and-button">
       <div class="service-name">
         <h1>{{ service.definition?.descr }}</h1>
       </div>
+      <div class="change-state-button">
+        <v-btn color="primary" @click="toggleStatusForm">Change State</v-btn>
+      </div>
     </div>
-
-    <v-btn color="primary" class="mb-2" @click="toggleStatusForm">Change State</v-btn>
 
     <v-dialog v-model="showStatusForm" persistent max-width="400px">
       <v-card>
@@ -35,7 +36,12 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-select v-model="newStatus" :items="statusOptions" label="Status" item-text="text" item-value="value" class="status-select"></v-select>
+                <v-combobox
+                  v-model="newStatus"
+                  :items="statusOptions.map(option => option.text)"
+                  item-text="text"
+                  class="status-select"
+                ></v-combobox>
               </v-col>
             </v-row>
           </v-container>
@@ -57,10 +63,10 @@
       <v-table>
         <thead style="background-color: #22638A; color: white; text-align: center;">
           <tr>
-            <th @click="sortTasks('id')">Time <span>⇅</span></th>
-            <th @click="sortTasks('service.descr')">Task <span>⇅</span></th>
-            <th @click="sortTasks('descrição')">Duration <span>⇅</span></th>
-            <th @click="sortTasks('deadline')">Observation <span>⇅</span></th>
+            <th @click="sortTasks('time')">Time <span>⇅</span></th>
+            <th @click="sortTasks('descr')">Task <span>⇅</span></th>
+            <th @click="sortTasks('duração')">Duration <span>⇅</span></th>
+            <th @click="sortTasks('observation')">Observation <span>⇅</span></th>
           </tr>
         </thead>
         <tbody>
@@ -167,9 +173,6 @@ export default {
         v => !!v || 'Duration is required',
         v => !isNaN(parseFloat(v)) && v > 0 || 'Duration must be a positive number'
       ],
-      observationRules: [
-        // Any observation rules you may have
-      ],
       statusOptions: [
         { value: "nafila", text: "Waiting" },
         { value: "programado", text: "Scheduled" },
@@ -203,28 +206,28 @@ export default {
   },
   methods: {
     async fetchVehicleTypes() {
-        try {
-          const response = await fetch('http://localhost:3000/vehicle-types');
-          const vehicleTypes = await response.json();
-          const serviceId = this.service.definition?.id;
-          if (!serviceId) {
-            console.error('Service definition ID not found.');
-            return;
-          }
-          let serviceCategory = null;
-          vehicleTypes.forEach(vehicleType => {
-            if (vehicleType.serviços.includes(serviceId)) {
-              this.service.tipo = vehicleType.id;
-            }
-          });
-          if (!serviceCategory) {
-            console.warn('Service category not found for service definition ID:', serviceId);
-            serviceCategory = 'Desconhecido';
-          }
-          return serviceCategory;
-        } catch (error) {
-          console.error('Error fetching vehicle types:', error);
+      try {
+        const response = await fetch('http://localhost:3000/vehicle-types');
+        const vehicleTypes = await response.json();
+        const serviceId = this.service.definition?.id;
+        if (!serviceId) {
+          console.error('Service definition ID not found.');
+          return;
         }
+        let serviceCategory = null;
+        vehicleTypes.forEach(vehicleType => {
+          if (vehicleType.serviços.includes(serviceId)) {
+            this.service.tipo = vehicleType.id;
+          }
+        });
+        if (!serviceCategory) {
+          console.warn('Service category not found for service definition ID:', serviceId);
+          serviceCategory = 'Desconhecido';
+        }
+        return serviceCategory;
+      } catch (error) {
+        console.error('Error fetching vehicle types:', error);
+      }
     },
     async fetchService(serviceId) {
       try {
@@ -264,8 +267,7 @@ export default {
       try {
         const response = await fetch(`http://localhost:3000/vehicles?id=${vehicleId}`);
         const vehicle = await response.json();
-        this.service.vehicle = vehicle[0];  // Assuming the endpoint returns an array with one element
-        console.log('Vehicle:', this.service.vehicle);
+        this.service.vehicle = vehicle[0];
       } catch (error) {
         console.error('Error fetching vehicle:', error);
       }
@@ -302,7 +304,7 @@ export default {
     },
 
     goTo(vehicleId) {
-    this.$router.push(`/vehicle/${vehicleId}`);
+      this.$router.push(`/vehicle/${vehicleId}`);
     },
 
     async addTask() {
@@ -351,23 +353,39 @@ export default {
     },
 
     toggleStatusForm() {
-      this.newStatus = this.service.estado;
+      const selectedStatus = this.statusOptions.find(option => option.value === this.service.estado);
+
+      if (!selectedStatus) {
+        console.error('Selected status not found in statusOptions:', this.service.estado);
+        return;
+      }
+
+      this.newStatus = selectedStatus.text;
       this.showStatusForm = !this.showStatusForm;
     },
 
+
     async changeStatus() {
       try {
+        const selectedStatus = this.statusOptions.find(option => option.text === this.newStatus);
+
+        if (!selectedStatus) {
+          console.error('Selected status not found in statusOptions:', this.newStatus);
+          return;
+        }
+
         const response = await fetch(`http://localhost:3000/services/${this.service.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ estado: this.newStatus })
+          body: JSON.stringify({ estado: selectedStatus.value })
         });
 
         if (!response.ok) throw new Error('Network response was not ok.');
 
-        this.service.estado = this.newStatus;
+        this.service.estado = selectedStatus.value;
+        this.newStatus = selectedStatus.text;
         this.showStatusForm = false;
       } catch (error) {
         console.error('Error changing status:', error);
@@ -399,6 +417,7 @@ export default {
 
 .task-page {
   padding: 20px;
+  padding-left: 60px;
 }
 
 .service-name{
@@ -424,13 +443,13 @@ export default {
   width: 250px;
   height: 250px;
   margin-right: 20px;
-  margin-left: 100px;
+  margin-left: auto;
   margin-top: 35px;
 }
 
 .vehicle-photo {
-  width: 100%;
-  height: 100%;
+  width: 250px;
+  height: 250px;
   object-fit: cover;
 }
 
@@ -445,6 +464,17 @@ export default {
   align-items: center;
 }
 
+.description-and-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px; 
+}
+
+.change-state-button {
+  padding-right: 25px;
+}
+
 .status-button-wrapper {
   display: flex;
   justify-content: flex-end;
@@ -452,18 +482,19 @@ export default {
 }
 
 .service-type {
+  font-size: 2.5em;
+  color:#22638A;
   text-align: center;
-  margin-right: 20px; /* Adjust as needed */
+  margin-right: 20px;
 }
 
 .status-button {
-  padding: 15px 40px; /* Increase padding for larger button */
+  padding: 20px 120px;
   border: none;
   border-radius: 5px;
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
-  font-size: 1.2em; /* Larger text size */
+  color: black;
+  cursor: default;
+  font-size: 1.2em;
 }
 
 button.status-waiting {
@@ -515,5 +546,17 @@ button.status-done {
 .v-list-item--active {
   background-color: #22638A !important;
 }
+
+.vehicle-model{
+  font-size: 1.5em;
+  color: #22638A;
+}
+
+.vehicle-details:hover .vehicle-model {
+  font-size: 1.8em;
+  transition: font-size 0.3s ease;
+}
+
+
 
 </style>

@@ -10,10 +10,10 @@
         <h2 class="login-card-title"><span class="bold-text">Login</span> to your account</h2>
         <form @submit.prevent="submitLogin">
           <div class="form-group">
-            <input type="text" placeholder="Employee Number" v-model="loginForm.employeeNumber" required>
+            <input type="text" placeholder="Employee Number" style="background-color: white;" v-model="loginForm.employeeNumber" required>
           </div>
           <div class="form-group">
-            <input type="password" placeholder="Password" v-model="loginForm.password" required>
+            <input type="password" placeholder="Password" style="background-color: white;" v-model="loginForm.password" required>
           </div>
           <button type="submit">Login</button>
         </form>
@@ -31,7 +31,7 @@ import { setUser } from '../models/user';
 
 export default {
   
-  name: 'LoginView',
+  name: 'Login',
   data() {
     return {
       loginForm: {
@@ -151,6 +151,7 @@ export default {
   color: white;
   font-weight: 300;
   font-size: 28px;
+  padding-bottom: 30px;
 }
 
 .bold-text {
