@@ -4,6 +4,11 @@ import Welcome from './pages/Welcome.vue';
 import authGuard from './authGuard';
 import Task from './pages/Task.vue';
 import Vehicle from './pages/Vehicle.vue';
+import WaitingTasks from './pages/WaitingTasks.vue';
+import ScheduledTasks from './pages/ScheduledTasks.vue';
+import StoppedTasks from './pages/StoppedTasks.vue';
+import Profile from './pages/Profile.vue';
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -33,6 +38,30 @@ const router = createRouter({
     {
       path: '/vehicle/:id',
       component: Vehicle,
+      meta: { requiresAuth: true },
+      beforeEnter: authGuard
+    },
+    {
+      path: '/waiting',
+      component: WaitingTasks,
+      meta: { requiresAuth: true },
+      beforeEnter: authGuard
+    },
+    {
+      path: '/scheduled',
+      component: ScheduledTasks,
+      meta: { requiresAuth: true },
+      beforeEnter: authGuard
+    },
+    {
+      path: '/stopped',
+      component: StoppedTasks,
+      meta: { requiresAuth: true },
+      beforeEnter: authGuard
+    },
+    {
+      path: '/profile',
+      component: Profile,
       meta: { requiresAuth: true },
       beforeEnter: authGuard
     }

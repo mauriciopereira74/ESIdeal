@@ -1,6 +1,5 @@
 <template>
     <v-app>
-      <!-- Barra de aplicativo -->
       <v-app-bar app fixed :elevation="isCollapsed ? 0 : 2" color="#22638A" dark :class="{'collapsed-app-bar': isCollapsed}">
         <div v-if="!isCollapsed" class="back-button-container">
           <v-list-item class="back-button" @click="goBack">
@@ -10,7 +9,7 @@
           </v-list-item>
         </div>
 
-        <div class="logo-container" :class="{ 'collapsed': isCollapsed }" @click="toggleCollapsed">
+        <div class="logo-container" :class="{ 'collapsed': isCollapsed }">
           <div v-if="!isCollapsed">
             <img src="../assets/logo2.png" alt="E.S.Ideal Logo" />
           </div>
@@ -18,6 +17,15 @@
             <img src="../assets/logo.png" alt="E.S.Ideal Logo" />
           </div>
         </div>
+
+        <v-app-bar-nav-icon class="toggleCollapse" @click="toggleCollapsed">
+            <div v-if="isCollapsed" class="collapsed">
+              <img src="@/assets/icons/fold.png" alt="Fold">
+            </div>
+            <div v-if="!isCollapsed" class="noncollapsed">
+              <img src="@/assets/icons/unfold.png" alt="Fold">
+            </div>
+        </v-app-bar-nav-icon>
 
         <v-spacer></v-spacer>
 
@@ -27,13 +35,43 @@
 
         <v-spacer></v-spacer>
 
-        <div class="logout">
-          <button @click="logout">LOGOUT</button>
-        </div>
+        <v-avatar size="36">
+          <img :src="user?.photo" alt="Mechanic Photo" style="height: 36px; width: 36px;">
+        </v-avatar>
+
+        <v-menu offset-y right>
+          <template v-slot:activator="{ props }">
+            <v-btn icon v-bind="props" v-on="on">
+              <img src="../assets/icons/arrow.png" alt="Chevron Down" style="height: 30px; width: 30px;">
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="goToProfile">
+              <v-list-item-icon>
+                <img src="../assets/icons/profile.png" alt="Logout" style="height: 24px; width: 24px;">
+              </v-list-item-icon>
+              <v-list-item-title>Profile</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="logout">
+              <v-list-item-icon>
+                <img src="../assets/icons/logout.png" alt="Logout" style="height: 24px; width: 24px;">
+              </v-list-item-icon>
+              <v-list-item-title>Logout</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </v-app-bar>
 
-      <v-navigation-drawer v-model="isCollapsed" app absolute color="#22638A" :mini-variant.sync="isCollapsed" class="custom-drawer">
-        <v-list>
+      <v-navigation-drawer 
+          v-model="isCollapsed"
+          app
+          absolute
+          color="#22638A"
+          expand-on-hover
+          :mini-variant="isCollapsed"
+          class="custom-drawer"
+      >
+        <v-list dense>
           <v-list-item class="back-button" @click="goBack">
             <v-list-item-icon>
               <img src="@/assets/icons/back.png" alt="Back">
@@ -45,9 +83,34 @@
               <v-list-item-title>Welcome</v-list-item-title>
             </div>
           </v-list-item>
+          <v-list-item to="/waiting">
+            <div class="list-item-content">
+              <img class="home-icon" src="@/assets/icons/clock.png">
+              <v-list-item-title>Waiting Tasks</v-list-item-title>
+            </div>
+          </v-list-item>
+          <v-list-item to="/scheduled" class="logout-button">
+            <div class="list-item-content">
+              <img class="home-icon" src="@/assets/icons/calendar.png">
+              <v-list-item-title>Scheduled Tasks</v-list-item-title>
+            </div>
+          </v-list-item>
+          <v-list-item to="/stopped">
+            <div class="list-item-content">
+              <img class="home-icon" src="@/assets/icons/stop.png">
+              <v-list-item-title>Stopped Tasks</v-list-item-title>
+            </div>
+          </v-list-item>
         </v-list>
+        <template v-slot:append>
+          <div class="pa-2">
+            <v-btn block @click="logout">
+              <img src="../assets/icons/logout.png" alt="Logout" style="height: 24px; width: 24px; margin-right: 8px;">
+              Logout
+            </v-btn>
+          </div>
+        </template>
        </v-navigation-drawer>
-  
       <v-main>
         <router-view></router-view>
       </v-main>
@@ -63,8 +126,7 @@
     data() {
       return {
         isCollapsed: true,
-        currentTime: this.getCurrentTime(),
-        user: getUser()
+        currentTime: this.getCurrentTime()
       };
     },
     methods: {
@@ -87,6 +149,9 @@
       },
       goBack() {
         if (this.$route.path !== '/welcome') this.$router.go(-1);
+      },
+      goToProfile(){
+        this.$router.push('/profile');
       }
     },
     mounted() {
@@ -94,6 +159,12 @@
     },
     beforeDestroy() {
       clearInterval(this.timer);
+    },
+    async created() {
+      this.user = await getUser();
+      const employeeNumber = this.user.mechanic?.employeeNumber;
+      const photoPath = `src/assets/userphotos/${employeeNumber}.png`;
+      this.user.photo = photoPath;
     }
   };
   </script>
@@ -126,7 +197,7 @@
 }
 
 .back-button {
-  margin-right: 10px; /* Space between back button and logo */
+  margin-right: 10px;
 }
 
 .collapsed-app-bar {
@@ -194,32 +265,46 @@
 
 .back-button {
   width: 100%;
-  height: 48px; /* Adjust height as needed */
+  height: 48px; 
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  background-color: #22638A; /* Match the sidebar color */
+  background-color: #22638A; 
   cursor: pointer;
   border: none;
   outline: none;
 }
 
 .back-button:hover {
-  background-color: #1e5065; /* Slightly darker on hover for better interaction */
+  background-color: #1e5065; 
 }
 
 .back-button img {
-  width: 24px; /* Icon size */
+  width: 24px;
   height: 24px;
 }
 
-/* Optionally, style the v-list-item-icon if needed */
+
 .v-list-item-icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
+.toggleCollapse div img {
+  width: 30px;
+  height: 30px;
+}
+
+.toggleCollapse div.noncollapsed {
+  margin-left: 20px;
+}
+
+.logout-button {
+  margin-top: auto;
+}
+
 
 </style>
 
