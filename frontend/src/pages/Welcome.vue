@@ -68,8 +68,24 @@ export default {
     };
   },
   computed: {
+    filteredTasksByRoute() {
+      const path = this.$route.path;
+      switch (path) {
+        case '/stopped':
+          return this.tasks.filter(task => task.estado === 'parado');
+        case '/scheduled':
+          return this.tasks.filter(task => task.estado === 'programado');
+        case '/waiting':
+          return this.tasks.filter(task => task.estado === 'nafila');
+        case '/completed':
+          return this.tasks.filter(task => task.estado === 'realizado');
+        case '/welcome':
+        default:
+          return this.tasks;
+      }
+    },
     filteredAndSortedTasks() {
-      return this.tasks
+      return this.filteredTasksByRoute
         .filter(task => {
           const searchLower = this.searchTerm.toLowerCase();
           return (
