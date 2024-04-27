@@ -32,7 +32,7 @@
             <td>{{ task.service.descr }}</td>
             <td>{{ task.descrição }}</td>
             <td>{{ task.deadline }}</td>
-            <td>{{ task.service.duração }}</td>
+            <td>{{ task.service.duração }} minutes</td>
             <td :class="['status-cell', {
               'status-waiting': task.estado === 'nafila',
               'status-scheduled': task.estado === 'programado',
@@ -77,7 +77,7 @@ export default {
             String(task.descrição).toLowerCase().includes(searchLower) || 
             String(task.deadline).toLowerCase().includes(searchLower) ||
             String(task.service.duração).toLowerCase().includes(searchLower) || // Usando task.service.duração
-            String(this.formatStatus(task.estado)).toLowerCase().includes(searchLower)
+            String(this.formatStatus(task.service.estado)).toLowerCase().includes(searchLower)
           );
         })
         .sort((a, b) => {
@@ -111,7 +111,7 @@ export default {
         this.tasks = tasksFromResponse.map(task => ({
           ...task,
           deadline: this.formatDeadline(task.data),
-          duration: task.duration ? `${task.duration} minutes` : '---',
+          duration: task.duration,
           service: this.serviceDefinitions[task['service-definitionId']]
         }));
       } catch (error) {

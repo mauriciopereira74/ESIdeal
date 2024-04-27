@@ -59,7 +59,8 @@ export default {
             id: mechanic.id,
             nome: mechanic.nome,
             especialidade: mechanic.especialidade,
-            employeeNumber: mechanic.employeeNumber
+            employeeNumber: mechanic.employeeNumber,
+            state: mechanic.state,
           };
           setUser(mechanicDetails);
           localStorage.setItem('isLoggedIn', 'true');

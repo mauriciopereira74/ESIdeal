@@ -202,6 +202,38 @@
       "date": "2024-04-23T16:52",
       "observation": "3qew",
       "duração": 12
+    },
+    {
+      "id": "300",
+      "serviceId": "s12",
+      "descr": "Take off the tires and change it",
+      "date": "2024-04-21T12:00",
+      "observation": "Everything seems fine",
+      "duração": 25
+    },
+    {
+      "id": "301",
+      "serviceId": "s12",
+      "descr": "Put new ones",
+      "date": "2024-04-21T12:25",
+      "observation": "Done",
+      "duração": 10
+    },
+    {
+      "id": "302",
+      "serviceId": "s12",
+      "descr": "Align direction",
+      "date": "2024-04-21T12:35",
+      "observation": "Everything seems fine",
+      "duração": 25
+    },
+    {
+      "id": "303",
+      "serviceId": "s12",
+      "descr": "Wash the car",
+      "date": "2024-04-21T13:00",
+      "observation": "Done",
+      "duração": 10
     }
   ],
   "vehicle-types": [
@@ -399,7 +431,8 @@
       "employeeNumber": "P0844",
       "password": "1234",
       "nome": "António da Silva",
-      "especialidade": "Electric Motor Expert"
+      "especialidade": "Fuel Motor Expert",
+      "state": "working"
     }
   ]
 }

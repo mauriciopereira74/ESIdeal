@@ -22,7 +22,7 @@
       <div class="service-name">
         <h1>{{ service.definition?.descr }}</h1>
       </div>
-      <div class="change-state-button">
+      <div class="change-state-button" v-if="formatStatus(service.estado) !== 'DONE'">
         <v-btn color="primary" @click="toggleStatusForm">Change State</v-btn>
       </div>
     </div>
@@ -73,14 +73,14 @@
           <tr v-for="task in filteredAndSortedTasks" :key="task.id" @click="goToTaskPage(task.id)">
             <td>{{ task.time }}</td>
             <td>{{ task.descr }}</td>
-            <td>{{ task.duração }}</td>
+            <td>{{ task.duração }} minutes</td>
             <td>{{ task.observation }}</td>
           </tr>
         </tbody>
       </v-table>
     </div>
 
-    <v-btn color="primary" class="mb-2" @click="toggleAddTaskForm">Add Task</v-btn>
+    <v-btn color="primary" class="mb-2" @click="toggleAddTaskForm" v-if="formatStatus(service.estado) !== 'DONE'">Add Task</v-btn>
 
     <v-dialog v-model="showAddTaskForm" persistent max-width="600px">
       <v-form v-model="valid" ref="form">
@@ -187,14 +187,15 @@ export default {
       return this.tasks.filter(task => {
         const searchLower = this.searchTerm.toLowerCase();
         return task.descr.toLowerCase().includes(searchLower) ||
-               task.observation.toLowerCase().includes(searchLower) || 
-               task.time.toLowerCase().includes(searchLower) ||
-               task.duração.toLowerCase().includes(searchLower);
+              task.observation.toLowerCase().includes(searchLower) || 
+              task.time.toLowerCase().includes(searchLower) ||
+              this.formatStatus(this.service.estado).toLowerCase().includes(searchLower); // Filtrar pelo status do serviço
       }).sort((a, b) => {
         let mod = this.sortOrder === 'ascending' ? 1 : -1;
         return a[this.sortColumn] < b[this.sortColumn] ? -1 * mod : 1 * mod;
       });
     },
+
     statusClass() {
       return {
         'status-waiting': this.service.estado === 'nafila',
@@ -221,7 +222,6 @@ export default {
           }
         });
         if (!serviceCategory) {
-          console.warn('Service category not found for service definition ID:', serviceId);
           serviceCategory = 'Desconhecido';
         }
         return serviceCategory;
@@ -281,7 +281,7 @@ export default {
           time: task.date,
           descr: task.descr,
           observation: task.observation,
-          duração: `${task.duração} minutes`
+          duração: task.duração
         }));
       } catch (error) {
         console.error('Error fetching tasks:', error);

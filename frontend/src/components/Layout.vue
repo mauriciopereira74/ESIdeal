@@ -3,9 +3,7 @@
       <v-app-bar app fixed :elevation="isCollapsed ? 0 : 2" color="#22638A" dark :class="{'collapsed-app-bar': isCollapsed}">
         <div v-if="!isCollapsed" class="back-button-container">
           <v-list-item class="back-button" @click="goBack">
-            <v-list-item-icon>
-              <img src="@/assets/icons/back.png" alt="Back">
-            </v-list-item-icon>
+            <img src="@/assets/icons/back.png" alt="Back">
           </v-list-item>
         </div>
 
@@ -41,21 +39,17 @@
 
         <v-menu offset-y right>
           <template v-slot:activator="{ props }">
-            <v-btn icon v-bind="props" v-on="on">
+            <v-btn icon v-bind="props">
               <img src="../assets/icons/arrow.png" alt="Chevron Down" style="height: 30px; width: 30px;">
             </v-btn>
           </template>
           <v-list>
             <v-list-item @click="goToProfile">
-              <v-list-item-icon>
-                <img src="../assets/icons/profile.png" alt="Logout" style="height: 24px; width: 24px;">
-              </v-list-item-icon>
+              <img src="../assets/icons/profile.png" alt="Logout" style="height: 24px; width: 24px;">
               <v-list-item-title>Profile</v-list-item-title>
             </v-list-item>
             <v-list-item @click="logout">
-              <v-list-item-icon>
                 <img src="../assets/icons/logout.png" alt="Logout" style="height: 24px; width: 24px;">
-              </v-list-item-icon>
               <v-list-item-title>Logout</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -73,9 +67,7 @@
       >
         <v-list dense>
           <v-list-item class="back-button" @click="goBack">
-            <v-list-item-icon>
-              <img src="@/assets/icons/back.png" alt="Back">
-            </v-list-item-icon>
+            <img src="@/assets/icons/back.png" alt="Back">
           </v-list-item>
           <v-list-item to="/welcome">
             <div class="list-item-content">
@@ -99,6 +91,12 @@
             <div class="list-item-content">
               <img class="home-icon" src="@/assets/icons/stop.png">
               <v-list-item-title>Stopped Tasks</v-list-item-title>
+            </div>
+          </v-list-item>
+          <v-list-item to="/completed">
+            <div class="list-item-content">
+              <img class="home-icon" src="@/assets/icons/done.png">
+              <v-list-item-title>Completed Tasks</v-list-item-title>
             </div>
           </v-list-item>
         </v-list>
@@ -126,7 +124,8 @@
     data() {
       return {
         isCollapsed: true,
-        currentTime: this.getCurrentTime()
+        currentTime: this.getCurrentTime(),
+        user: {},
       };
     },
     methods: {
@@ -283,13 +282,6 @@
 .back-button img {
   width: 24px;
   height: 24px;
-}
-
-
-.v-list-item-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .toggleCollapse div img {

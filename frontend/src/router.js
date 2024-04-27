@@ -8,6 +8,7 @@ import WaitingTasks from './pages/WaitingTasks.vue';
 import ScheduledTasks from './pages/ScheduledTasks.vue';
 import StoppedTasks from './pages/StoppedTasks.vue';
 import Profile from './pages/Profile.vue';
+import CompletedTasks from './pages/CompletedTasks.vue';
 
 
 const router = createRouter({
@@ -62,6 +63,12 @@ const router = createRouter({
     {
       path: '/profile',
       component: Profile,
+      meta: { requiresAuth: true },
+      beforeEnter: authGuard
+    },
+    {
+      path: '/completed',
+      component: CompletedTasks,
       meta: { requiresAuth: true },
       beforeEnter: authGuard
     }

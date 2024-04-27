@@ -14,7 +14,8 @@ let userState = {
         id: mechanicDetails.id,
         employeeNumber: mechanicDetails.employeeNumber,
         nome: mechanicDetails.nome,
-        especialidade: mechanicDetails.especialidade
+        especialidade: mechanicDetails.especialidade,
+        state: mechanicDetails.state,
       }
     };
   };
